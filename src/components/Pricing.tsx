@@ -80,7 +80,7 @@ const Pricing = () => {
             </div>
           </div>
           
-          {/* Skip the Line Option */}
+          {/* Contact Sales Option */}
           <div className="pricing-card opacity-0 transition-all duration-500 delay-200">
             <div className="h-full glass-card rounded-2xl p-8 border border-galaxy-accent/30 bg-gradient-to-b from-galaxy-purple/20 to-transparent flex flex-col relative overflow-hidden">
               {/* Premium badge */}
