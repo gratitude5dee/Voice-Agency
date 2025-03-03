@@ -60,9 +60,10 @@ const Hero = () => {
     };
   }, []);
   
-  const handleButtonHover = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const button = e.currentTarget;
-    const rect = button.getBoundingClientRect();
+  // Updated to accept both button and anchor elements
+  const handleElementHover = (e: React.MouseEvent<HTMLElement>) => {
+    const element = e.currentTarget;
+    const rect = element.getBoundingClientRect();
     const ripple = document.createElement('div');
     
     ripple.classList.add('ripple-effect');
@@ -70,7 +71,7 @@ const Hero = () => {
     ripple.style.left = `${e.clientX - rect.left - ripple.offsetWidth / 2}px`;
     ripple.style.top = `${e.clientY - rect.top - ripple.offsetHeight / 2}px`;
     
-    button.appendChild(ripple);
+    element.appendChild(ripple);
     
     setTimeout(() => {
       ripple.remove();
@@ -105,7 +106,7 @@ const Hero = () => {
               <a 
                 href="#waitlist" 
                 className="primary-button w-full sm:w-auto text-center"
-                onMouseEnter={handleButtonHover}
+                onMouseEnter={handleElementHover}
               >
                 Join the Waitlist
               </a>
