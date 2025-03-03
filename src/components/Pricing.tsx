@@ -85,17 +85,17 @@ const Pricing = () => {
             <div className="h-full glass-card rounded-2xl p-8 border border-galaxy-accent/30 bg-gradient-to-b from-galaxy-purple/20 to-transparent flex flex-col relative overflow-hidden">
               {/* Premium badge */}
               <div className="absolute -right-10 top-7 bg-galaxy-accent text-white text-xs font-semibold px-10 py-1 transform rotate-45">
-                Premium
+                Priority
               </div>
               
               <div className="mb-6">
-                <h3 className="text-xl font-semibold mb-2">Skip the Waitlist</h3>
-                <p className="text-gray-400">Immediate access when we launch</p>
+                <h3 className="text-xl font-semibold mb-2">Priority Access</h3>
+                <p className="text-gray-400">For businesses and enterprises</p>
               </div>
               
               <div className="mb-8">
-                <div className="text-4xl font-bold mb-2">$500</div>
-                <p className="text-gray-400">One-time payment</p>
+                <div className="text-4xl font-bold mb-2">Custom</div>
+                <p className="text-gray-400">Contact our sales team</p>
               </div>
               
               <ul className="space-y-4 mb-8">
@@ -117,7 +117,7 @@ const Pricing = () => {
                 </li>
                 <li className="flex items-start">
                   <Check className="w-5 h-5 text-galaxy-accent mr-3 mt-0.5 flex-shrink-0" />
-                  <span>Lifetime 25% discount on upgrades</span>
+                  <span>Custom integration assistance</span>
                 </li>
               </ul>
               
@@ -125,7 +125,7 @@ const Pricing = () => {
                 href="#waitlist" 
                 className="primary-button text-center mt-auto group"
               >
-                Skip the Waitlist
+                Contact Sales
                 <ArrowRight className="w-4 h-4 inline-block ml-2 transition-transform group-hover:translate-x-1" />
               </a>
             </div>
