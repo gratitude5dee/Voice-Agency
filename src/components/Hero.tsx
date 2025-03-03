@@ -113,6 +113,7 @@ const Hero = () => {
               <a 
                 href="#features" 
                 className="secondary-button w-full sm:w-auto text-center"
+                onMouseEnter={handleElementHover}
               >
                 Explore Features
               </a>
