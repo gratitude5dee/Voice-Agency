@@ -1,11 +1,9 @@
-
 import { useEffect, useRef } from 'react';
 import { Sparkles } from 'lucide-react';
 
 const Hero = () => {
   const starsContainerRef = useRef<HTMLDivElement>(null);
   
-  // Create random stars background effect
   useEffect(() => {
     if (!starsContainerRef.current) return;
     
@@ -13,7 +11,6 @@ const Hero = () => {
     const containerWidth = window.innerWidth;
     const containerHeight = window.innerHeight;
     
-    // Create stars
     for (let i = 0; i < 100; i++) {
       const star = document.createElement('div');
       const size = Math.random() * 3;
@@ -25,19 +22,16 @@ const Hero = () => {
       star.style.top = `${Math.random() * containerHeight}px`;
       star.style.animationDelay = `${Math.random() * 5}s`;
       
-      // Vary the star brightness
       const opacity = Math.random() * 0.8 + 0.2;
       star.style.opacity = opacity.toString();
       
       container.appendChild(star);
     }
     
-    // Create constellations (connecting lines between stars)
     for (let i = 0; i < 6; i++) {
       const constellation = document.createElement('div');
       constellation.classList.add('constellation');
       
-      // Random position and size
       const width = Math.random() * 150 + 50;
       const height = Math.random() * 1 + 0.5;
       const top = Math.random() * containerHeight;
@@ -60,7 +54,6 @@ const Hero = () => {
     };
   }, []);
   
-  // Updated to accept both button and anchor elements
   const handleElementHover = (e: React.MouseEvent<HTMLElement>) => {
     const element = e.currentTarget;
     const rect = element.getBoundingClientRect();
@@ -82,7 +75,6 @@ const Hero = () => {
     <section className="relative min-h-screen flex items-center pt-24 pb-16 overflow-hidden">
       <div ref={starsContainerRef} className="stars-container"></div>
       
-      {/* Gradient Orb Background Effects */}
       <div className="absolute top-1/4 -left-64 w-96 h-96 bg-galaxy-accent/20 rounded-full filter blur-3xl"></div>
       <div className="absolute bottom-20 -right-96 w-[40rem] h-[40rem] bg-galaxy-accent/10 rounded-full filter blur-3xl"></div>
       
@@ -102,7 +94,7 @@ const Hero = () => {
               Awaken Ambience brings a seamless voice experience with advanced memory capabilities, real-time data, and intuitive commands for a naturally intelligent assistant.
             </p>
             
-            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start space-y-4 sm:space-y-0 sm:space-x-4 animate-fade-in [animation-delay:600ms]">
+            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start space-y-4 sm:space-y-0 sm:space-x-4 animate-fade-in [animation-delay:600ms] relative z-20">
               <a 
                 href="#waitlist" 
                 className="primary-button w-full sm:w-auto text-center"
@@ -122,10 +114,8 @@ const Hero = () => {
           
           <div className="w-full lg:w-1/2 mt-12 lg:mt-0 flex justify-center animate-fade-in [animation-delay:800ms]">
             <div className="relative w-full max-w-md">
-              {/* Main circular interface */}
               <div className="relative w-64 h-64 mx-auto rounded-full glass-card border border-galaxy-accent/30 p-2 shadow-[0_0_50px_rgba(155,135,245,0.3)] animate-float">
                 <div className="w-full h-full rounded-full bg-gradient-to-br from-galaxy-purple to-galaxy-dark flex items-center justify-center overflow-hidden">
-                  {/* Central pulsing circle */}
                   <div className="relative w-24 h-24 rounded-full bg-galaxy-accent/20 flex items-center justify-center">
                     <div className="absolute w-full h-full rounded-full bg-galaxy-accent/20 animate-pulse-slow"></div>
                     <div className="absolute w-full h-full rounded-full bg-galaxy-accent/10 animate-pulse-slow [animation-delay:1s]"></div>
@@ -134,13 +124,11 @@ const Hero = () => {
                     </div>
                   </div>
                   
-                  {/* Sound wave circles */}
                   <div className="absolute w-full h-full rounded-full border border-galaxy-accent/20 opacity-0 animate-ping [animation-duration:3s]"></div>
                   <div className="absolute w-full h-full rounded-full border border-galaxy-accent/20 opacity-0 animate-ping [animation-duration:3s] [animation-delay:1s]"></div>
                 </div>
               </div>
               
-              {/* Floating elements */}
               <div className="absolute -top-4 right-16 w-20 h-20 rounded-xl glass-card p-4 flex items-center justify-center animate-float [animation-delay:1s]">
                 <Cloud className="w-10 h-10 text-galaxy-accent" />
               </div>
@@ -160,7 +148,6 @@ const Hero = () => {
   );
 };
 
-// Adding these components inline since they're only used here
 const Mic = (props: any) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
