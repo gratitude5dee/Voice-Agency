@@ -6,6 +6,7 @@ import Pricing from "../components/Pricing";
 import WaitlistForm from "../components/WaitlistForm";
 import Footer from "../components/Footer";
 import { useEffect } from "react";
+import { Toaster } from "sonner";
 
 const Index = () => {
   useEffect(() => {
@@ -39,6 +40,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
+      <Toaster position="top-center" richColors />
       <Navigation />
       <Hero />
       <Features />

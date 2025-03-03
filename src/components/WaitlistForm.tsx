@@ -1,6 +1,8 @@
 
 import { useState } from 'react';
-import { Check } from 'lucide-react';
+import { Check, AlertCircle } from 'lucide-react';
+import { supabase } from "../integrations/supabase/client";
+import { toast } from "sonner";
 
 type FormMode = 'waitlist' | 'skip';
 
@@ -19,6 +21,7 @@ const WaitlistForm = () => {
   });
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -26,21 +29,59 @@ const WaitlistForm = () => {
       ...prev,
       [name]: value
     }));
+    
+    // Clear error when user starts typing again
+    if (error) setError(null);
   };
   
   const handleModeChange = (mode: FormMode) => {
     setFormMode(mode);
+    setError(null);
   };
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError(null);
     
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      // Prepare data for Supabase
+      const waitlistData = {
+        name: formData.name,
+        email: formData.email,
+        referral_code: formData.referralCode || null,
+        skip_waitlist: formMode === 'skip',
+        payment_method: formMode === 'skip' ? formData.paymentMethod : null
+      };
+
+      // Insert data into Supabase
+      const { error: supabaseError } = await supabase
+        .from('waitlist')
+        .insert([waitlistData]);
+
+      if (supabaseError) {
+        console.error('Supabase error:', supabaseError);
+        if (supabaseError.code === '23505') {
+          // Unique violation (email already exists)
+          setError('This email is already registered. Please use a different email.');
+        } else {
+          setError(`Failed to submit: ${supabaseError.message}`);
+        }
+        setLoading(false);
+        return;
+      }
+
+      // Show success toast
+      toast.success('Successfully joined the waitlist!');
+      
+      // Set submitted state to true
       setLoading(false);
       setSubmitted(true);
-    }, 1500);
+    } catch (err) {
+      console.error('Form submission error:', err);
+      setError('An unexpected error occurred. Please try again later.');
+      setLoading(false);
+    }
   };
   
   return (
@@ -89,6 +130,13 @@ const WaitlistForm = () => {
                   Skip the Line
                 </button>
               </div>
+              
+              {error && (
+                <div className="mb-6 p-3 bg-red-900/30 border border-red-500/50 rounded-lg flex items-center">
+                  <AlertCircle className="text-red-500 mr-2 h-5 w-5" />
+                  <p className="text-red-300 text-sm">{error}</p>
+                </div>
+              )}
               
               <form onSubmit={handleSubmit}>
                 <div className="space-y-4 mb-6">
