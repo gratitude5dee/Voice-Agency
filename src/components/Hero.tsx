@@ -1,3 +1,4 @@
+
 import { useEffect, useRef } from 'react';
 import { Sparkles } from 'lucide-react';
 
@@ -120,7 +121,7 @@ const Hero = () => {
                     <div className="absolute w-full h-full rounded-full bg-galaxy-accent/20 animate-pulse-slow"></div>
                     <div className="absolute w-full h-full rounded-full bg-galaxy-accent/10 animate-pulse-slow [animation-delay:1s]"></div>
                     <div className="z-10 w-14 h-14 rounded-full bg-galaxy-accent flex items-center justify-center shadow-lg">
-                      <Mic className="w-7 h-7 text-white" />
+                      <Sparkles className="w-7 h-7 text-white" />
                     </div>
                   </div>
                   

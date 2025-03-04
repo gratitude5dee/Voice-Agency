@@ -1,5 +1,5 @@
 
-import { Mic, Github, Twitter, Linkedin } from 'lucide-react';
+import { Sparkles, Github, Twitter, Linkedin } from 'lucide-react';
 
 const Footer = () => {
   const year = new Date().getFullYear();
@@ -14,7 +14,7 @@ const Footer = () => {
           <div className="md:col-span-1">
             <a href="#" className="flex items-center space-x-2 mb-4">
               <div className="w-10 h-10 rounded-full bg-galaxy-purple flex items-center justify-center">
-                <Mic className="w-5 h-5 text-white" />
+                <Sparkles className="w-5 h-5 text-white" />
               </div>
               <span className="text-xl font-semibold">Awaken Ambience</span>
             </a>

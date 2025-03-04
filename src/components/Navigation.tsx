@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { Mic, Menu, X } from 'lucide-react';
+import { Sparkles, Menu, X } from 'lucide-react';
 
 const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -30,7 +30,7 @@ const Navigation = () => {
       <div className="container mx-auto px-6 flex items-center justify-between">
         <a href="#" className="flex items-center space-x-2 group">
           <div className="relative w-10 h-10 flex items-center justify-center rounded-full bg-galaxy-purple transition-all duration-300 group-hover:bg-galaxy-accent">
-            <Mic className="w-5 h-5 text-white" />
+            <Sparkles className="w-5 h-5 text-white" />
             <div className="absolute inset-0 rounded-full bg-galaxy-accent/30 transform scale-0 group-hover:scale-125 transition-transform duration-500 opacity-0 group-hover:opacity-100"></div>
           </div>
           <span className="text-xl font-semibold text-white">Awaken Ambience</span>
