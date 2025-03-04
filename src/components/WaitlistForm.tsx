@@ -120,11 +120,11 @@ const WaitlistForm = () => {
           {!submitted ? <div className="p-8">
               <div className="text-center mb-8">
                 <h2 className="text-3xl font-bold mb-4">
-                  {formMode === 'waitlist' ? 'Join Our Waitlist' : 'Contact Sales'}
+                  {formMode === 'waitlist' ? 'Join Our Waitlist Today' : 'Contact Sales'}
                 </h2>
                 <p className="text-gray-300">
                   {formMode === 'waitlist' 
-                    ? 'Be among the first to experience Awaken Ambience.' 
+                    ? 'Be among the first to experience an AI assistant that both sees and understands your world.' 
                     : 'Contact our sales team for priority access to Awaken Ambience.'}
                 </p>
               </div>

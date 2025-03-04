@@ -1,5 +1,5 @@
 
-import { Mic, Power, Cloud, Search } from 'lucide-react';
+import { Mic, Eye, Brain, Cloud, Search, Shield } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 
 const Features = () => {
@@ -36,23 +36,23 @@ const Features = () => {
       <div className="container mx-auto px-6">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
-            Cosmic Intelligence at Your Command
+            The First Assistant That Truly Sees Your World
           </h2>
           <p className="text-gray-300">
-            Awaken Ambience combines cutting-edge voice recognition with personalized memory and live data access for an unmatched assistant experience.
+            Unlike traditional voice assistants that operate blindly, Awaken Ambience combines powerful voice capabilities with visual understanding. Share your screen or camera view to get assistance with what you're actually seeing in real-time.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Feature 1 */}
           <div className="feature-card opacity-0 translate-y-10 transition-all duration-700 delay-[0ms]">
             <div className="h-full glass-card rounded-2xl p-6 hover:shadow-[0_10px_40px_-15px_rgba(155,135,245,0.3)] transition-all duration-500">
               <div className="feature-icon-wrapper">
-                <Mic className="w-6 h-6 text-white" />
+                <Eye className="w-6 h-6 text-white" />
               </div>
-              <h3 className="text-xl font-semibold mb-3">Awaken on Command</h3>
+              <h3 className="text-xl font-semibold mb-3">Sees What You See</h3>
               <p className="text-gray-300">
-                Simply speak the wake word to activate Awaken Ambience instantly, with customizable phrases that fit naturally into your vocabulary.
+                Stream your camera or share your screen to get contextual help with what you're looking at—from identifying objects to troubleshooting technical issues.
               </p>
             </div>
           </div>
@@ -61,11 +61,11 @@ const Features = () => {
           <div className="feature-card opacity-0 translate-y-10 transition-all duration-700 delay-[200ms]">
             <div className="h-full glass-card rounded-2xl p-6 hover:shadow-[0_10px_40px_-15px_rgba(155,135,245,0.3)] transition-all duration-500">
               <div className="feature-icon-wrapper">
-                <Power className="w-6 h-6 text-white" />
+                <Brain className="w-6 h-6 text-white" />
               </div>
-              <h3 className="text-xl font-semibold mb-3">Stop Listening</h3>
+              <h3 className="text-xl font-semibold mb-3">Remembers Everything</h3>
               <p className="text-gray-300">
-                Advanced privacy controls let you instantly pause voice monitoring with simple commands for complete control over your experience.
+                No more repeating yourself. Awaken Ambience maintains context throughout your interactions and remembers your preferences over time.
               </p>
             </div>
           </div>
@@ -74,11 +74,11 @@ const Features = () => {
           <div className="feature-card opacity-0 translate-y-10 transition-all duration-700 delay-[400ms]">
             <div className="h-full glass-card rounded-2xl p-6 hover:shadow-[0_10px_40px_-15px_rgba(155,135,245,0.3)] transition-all duration-500">
               <div className="feature-icon-wrapper">
-                <Cloud className="w-6 h-6 text-white" />
+                <Mic className="w-6 h-6 text-white" />
               </div>
-              <h3 className="text-xl font-semibold mb-3">Store Memories</h3>
+              <h3 className="text-xl font-semibold mb-3">Natural Speech</h3>
               <p className="text-gray-300">
-                Intelligent context retention remembers your preferences, past interactions, and important information for truly personalized assistance.
+                Speak normally without awkward trigger phrases. Ask follow-up questions naturally, just like talking to a person.
               </p>
             </div>
           </div>
@@ -87,11 +87,24 @@ const Features = () => {
           <div className="feature-card opacity-0 translate-y-10 transition-all duration-700 delay-[600ms]">
             <div className="h-full glass-card rounded-2xl p-6 hover:shadow-[0_10px_40px_-15px_rgba(155,135,245,0.3)] transition-all duration-500">
               <div className="feature-icon-wrapper">
-                <Search className="w-6 h-6 text-white" />
+                <Cloud className="w-6 h-6 text-white" />
               </div>
-              <h3 className="text-xl font-semibold mb-3">Live Internet Search</h3>
+              <h3 className="text-xl font-semibold mb-3">Real-Time Information</h3>
               <p className="text-gray-300">
-                Seamlessly connects to the web for real-time data, weather, news, and information without breaking your conversational flow.
+                From weather forecasts to breaking news, Awaken Ambience pulls live data from across the internet for accurate information.
+              </p>
+            </div>
+          </div>
+          
+          {/* Feature 5 */}
+          <div className="feature-card opacity-0 translate-y-10 transition-all duration-700 delay-[800ms]">
+            <div className="h-full glass-card rounded-2xl p-6 hover:shadow-[0_10px_40px_-15px_rgba(155,135,245,0.3)] transition-all duration-500">
+              <div className="feature-icon-wrapper">
+                <Shield className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="text-xl font-semibold mb-3">Privacy Controls</h3>
+              <p className="text-gray-300">
+                Simply say "stop listening" or "stop watching" to instantly pause voice and visual monitoring. You control when it's active.
               </p>
             </div>
           </div>
@@ -101,9 +114,9 @@ const Features = () => {
         <div className="mt-24 glass-card rounded-2xl overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-2">
             <div className="p-8 lg:p-12 flex flex-col justify-center">
-              <h3 className="text-2xl md:text-3xl font-bold mb-6">Experience Natural Interaction</h3>
+              <h3 className="text-2xl md:text-3xl font-bold mb-6">Experience The Difference</h3>
               <p className="text-gray-300 mb-8">
-                Awaken Ambience understands natural language and context, creating a seamless conversation experience that feels intuitive and responsive.
+                Awaken Ambience combines voice intelligence with visual understanding for a truly helpful assistant experience.
               </p>
               
               {/* Example interactions */}
@@ -113,7 +126,7 @@ const Features = () => {
                     <Mic className="w-4 h-4 text-white" />
                   </div>
                   <div className="glass-card rounded-lg p-3 text-sm text-gray-300">
-                    "Awaken, what's the weather in Tokyo today and remind me about my meeting at 3pm."
+                    "Awaken, I'm sharing my screen. Can you help me figure out why this spreadsheet formula isn't working?"
                   </div>
                 </div>
                 
@@ -122,7 +135,7 @@ const Features = () => {
                     <Sparkles className="w-4 h-4 text-white" />
                   </div>
                   <div className="glass-card rounded-lg p-3 text-sm text-white">
-                    "In Tokyo, it's currently 72°F with clear skies. I've set a reminder for your meeting at 3:00 PM today."
+                    "I can see you're trying to use a VLOOKUP function. The issue is in your table array parameter—you've selected columns B:D, but your lookup value is in column E. Try adjusting the formula to include column E in your range."
                   </div>
                 </div>
                 
@@ -131,7 +144,7 @@ const Features = () => {
                     <Mic className="w-4 h-4 text-white" />
                   </div>
                   <div className="glass-card rounded-lg p-3 text-sm text-gray-300">
-                    "Stop listening until tomorrow morning."
+                    "Awaken, I'm at the grocery store. Which of these cereal options has the least sugar?"
                   </div>
                 </div>
                 
@@ -140,7 +153,7 @@ const Features = () => {
                     <Sparkles className="w-4 h-4 text-white" />
                   </div>
                   <div className="glass-card rounded-lg p-3 text-sm text-white">
-                    "I'll pause active listening until 8:00 AM tomorrow. You can still activate me with your wake word if needed."
+                    "I can see three cereals in view. Based on the nutrition labels visible, the Multi-Grain Cheerios has the lowest sugar content at 6g per serving, compared to 12g in the Honey Nut Cheerios and 9g in the granola option."
                   </div>
                 </div>
               </div>
@@ -166,7 +179,7 @@ const Features = () => {
               {/* Central icon */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="w-16 h-16 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center">
-                  <Sparkles className="w-7 h-7 text-white" />
+                  <Eye className="w-7 h-7 text-white" />
                 </div>
               </div>
               
@@ -175,6 +188,105 @@ const Features = () => {
                 <div className="w-32 h-32 rounded-full border border-white/20 animate-pulse-slow"></div>
                 <div className="absolute w-48 h-48 rounded-full border border-white/10 animate-pulse-slow [animation-delay:1s]"></div>
                 <div className="absolute w-64 h-64 rounded-full border border-white/5 animate-pulse-slow [animation-delay:2s]"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Use Cases Section */}
+        <div className="mt-24">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <h2 className="text-3xl font-bold mb-6">
+              How People Are Using Awaken Ambience
+            </h2>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {/* Use Case 1 */}
+            <div className="feature-card opacity-0 translate-y-10 transition-all duration-700">
+              <div className="h-full glass-card rounded-2xl p-6">
+                <h3 className="text-xl font-semibold mb-4 text-galaxy-accent">For Visual Assistance</h3>
+                <ul className="space-y-3 text-gray-300">
+                  <li className="flex items-start space-x-2">
+                    <span className="text-galaxy-accent">•</span>
+                    <span>Share your screen to get help troubleshooting technical issues</span>
+                  </li>
+                  <li className="flex items-start space-x-2">
+                    <span className="text-galaxy-accent">•</span>
+                    <span>Scan product labels while shopping for instant nutrition comparisons</span>
+                  </li>
+                  <li className="flex items-start space-x-2">
+                    <span className="text-galaxy-accent">•</span>
+                    <span>Show a confusing set of instructions to get step-by-step guidance</span>
+                  </li>
+                  <li className="flex items-start space-x-2">
+                    <span className="text-galaxy-accent">•</span>
+                    <span>Get real-time translations of text you're looking at</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            
+            {/* Use Case 2 */}
+            <div className="feature-card opacity-0 translate-y-10 transition-all duration-700">
+              <div className="h-full glass-card rounded-2xl p-6">
+                <h3 className="text-xl font-semibold mb-4 text-galaxy-accent">For Productivity</h3>
+                <ul className="space-y-3 text-gray-300">
+                  <li className="flex items-start space-x-2">
+                    <span className="text-galaxy-accent">•</span>
+                    <span>Schedule meetings while showing your calendar screen</span>
+                  </li>
+                  <li className="flex items-start space-x-2">
+                    <span className="text-galaxy-accent">•</span>
+                    <span>Add items to your shopping list while looking through your pantry</span>
+                  </li>
+                  <li className="flex items-start space-x-2">
+                    <span className="text-galaxy-accent">•</span>
+                    <span>Review documents together for instant feedback</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            
+            {/* Use Case 3 */}
+            <div className="feature-card opacity-0 translate-y-10 transition-all duration-700">
+              <div className="h-full glass-card rounded-2xl p-6">
+                <h3 className="text-xl font-semibold mb-4 text-galaxy-accent">For Information</h3>
+                <ul className="space-y-3 text-gray-300">
+                  <li className="flex items-start space-x-2">
+                    <span className="text-galaxy-accent">•</span>
+                    <span>Ask complex questions about what you're seeing</span>
+                  </li>
+                  <li className="flex items-start space-x-2">
+                    <span className="text-galaxy-accent">•</span>
+                    <span>Get visual confirmation that Awaken understands your environment</span>
+                  </li>
+                  <li className="flex items-start space-x-2">
+                    <span className="text-galaxy-accent">•</span>
+                    <span>Research topics through natural conversation with visual references</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            
+            {/* Use Case 4 */}
+            <div className="feature-card opacity-0 translate-y-10 transition-all duration-700">
+              <div className="h-full glass-card rounded-2xl p-6">
+                <h3 className="text-xl font-semibold mb-4 text-galaxy-accent">For Home</h3>
+                <ul className="space-y-3 text-gray-300">
+                  <li className="flex items-start space-x-2">
+                    <span className="text-galaxy-accent">•</span>
+                    <span>Show Awaken your smart home dashboard for intuitive control</span>
+                  </li>
+                  <li className="flex items-start space-x-2">
+                    <span className="text-galaxy-accent">•</span>
+                    <span>Get cooking assistance while showing your ingredients</span>
+                  </li>
+                  <li className="flex items-start space-x-2">
+                    <span className="text-galaxy-accent">•</span>
+                    <span>Identify plants, objects, or issues around your home visually</span>
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
@@ -200,6 +312,53 @@ const Sparkles = (props: any) => (
     <path d="M19 17v4" />
     <path d="M3 5h4" />
     <path d="M17 19h4" />
+  </svg>
+);
+
+const Brain = (props: any) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    {...props}
+  >
+    <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z" />
+    <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z" />
+  </svg>
+);
+
+const Eye = (props: any) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    {...props}
+  >
+    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+    <circle cx="12" cy="12" r="3" />
+  </svg>
+);
+
+const Shield = (props: any) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    {...props}
+  >
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
   </svg>
 );
 

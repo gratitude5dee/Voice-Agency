@@ -83,15 +83,15 @@ const Hero = () => {
           <div className="w-full lg:w-1/2 text-center lg:text-left">
             <div className="inline-flex items-center px-3 py-1 mb-6 rounded-full bg-galaxy-purple/30 border border-galaxy-accent/20 animate-fade-in">
               <Sparkles size={16} className="text-galaxy-accent mr-2" />
-              <span className="text-sm font-medium">Reimagining voice assistance</span>
+              <span className="text-sm font-medium">Next-generation assistance</span>
             </div>
             
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 animate-fade-in [animation-delay:200ms]">
-              Your Personal <span className="text-galaxy-accent">Voice Assistant</span> with Cosmic Intelligence
+              Meet Awaken Ambience: The Voice Assistant That <span className="text-galaxy-accent">Sees</span> and <span className="text-galaxy-accent">Understands</span>
             </h1>
             
             <p className="text-lg text-gray-300 mb-8 max-w-xl mx-auto lg:mx-0 animate-fade-in [animation-delay:400ms]">
-              Awaken Ambience brings a seamless voice experience with advanced memory capabilities, real-time data, and intuitive commands for a naturally intelligent assistant.
+              Awaken Ambience goes beyond Siri or Google Assistant with human-like memory, visual understanding, and contextual intelligence. Share your screen or camera stream and watch as it truly understands what you're looking at.
             </p>
             
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start space-y-4 sm:space-y-0 sm:space-x-4 animate-fade-in [animation-delay:600ms] relative z-20">
@@ -107,7 +107,7 @@ const Hero = () => {
                 className="secondary-button w-full sm:w-auto text-center"
                 onMouseEnter={handleElementHover}
               >
-                Explore Features
+                See It in Action
               </a>
             </div>
           </div>
@@ -138,7 +138,7 @@ const Hero = () => {
               </div>
               
               <div className="absolute -bottom-4 right-20 w-20 h-20 rounded-xl glass-card p-4 flex items-center justify-center animate-float [animation-delay:1.5s]">
-                <Power className="w-10 h-10 text-galaxy-accent" />
+                <Camera className="w-10 h-10 text-galaxy-accent" />
               </div>
             </div>
           </div>
@@ -196,7 +196,7 @@ const Search = (props: any) => (
   </svg>
 );
 
-const Power = (props: any) => (
+const Camera = (props: any) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
@@ -207,10 +207,8 @@ const Power = (props: any) => (
     strokeLinejoin="round"
     {...props}
   >
-    <path d="M18.36 6.64A9 9 0 0 1 20.77 15" />
-    <path d="M6.16 6.16a9 9 0 1 0 12.68 12.68" />
-    <path d="M12 2v4" />
-    <path d="m2 2 20 20" />
+    <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
+    <circle cx="12" cy="13" r="3" />
   </svg>
 );
 

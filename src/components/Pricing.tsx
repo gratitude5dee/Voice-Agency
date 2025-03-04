@@ -35,10 +35,10 @@ const Pricing = () => {
       <div className="container mx-auto px-6">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
-            Early Access Options
+            Be Among The First To Experience Visual-Voice Intelligence
           </h2>
           <p className="text-gray-300">
-            Be among the first to experience the future of voice assistance with our exclusive early access options.
+            Get early access to Awaken Ambience and be part of the future of AI assistance.
           </p>
         </div>
         
@@ -90,7 +90,7 @@ const Pricing = () => {
               
               <div className="mb-6">
                 <h3 className="text-xl font-semibold mb-2">Priority Access</h3>
-                <p className="text-gray-400">For businesses and enterprises</p>
+                <p className="text-gray-400">For businesses and early adopters</p>
               </div>
               
               <div className="mb-8">
@@ -118,6 +118,10 @@ const Pricing = () => {
                 <li className="flex items-start">
                   <Check className="w-5 h-5 text-galaxy-accent mr-3 mt-0.5 flex-shrink-0" />
                   <span>Custom integration assistance</span>
+                </li>
+                <li className="flex items-start">
+                  <Check className="w-5 h-5 text-galaxy-accent mr-3 mt-0.5 flex-shrink-0" />
+                  <span>Advanced visual recognition features</span>
                 </li>
               </ul>
               

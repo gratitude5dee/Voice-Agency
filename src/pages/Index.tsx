@@ -11,7 +11,7 @@ import { Toaster } from "sonner";
 const Index = () => {
   useEffect(() => {
     // Update document title
-    document.title = "Awaken Ambience | Voice Assistant";
+    document.title = "Awaken Ambience | See and Understand";
     
     // Smooth scroll for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
