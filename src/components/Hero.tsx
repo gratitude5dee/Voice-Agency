@@ -30,19 +30,15 @@ const Hero = () => {
           <div className="w-full lg:w-1/2 text-center lg:text-left">
             <div className="inline-flex items-center px-3 py-1 mb-6 rounded-full bg-galaxy-purple/30 border border-galaxy-accent/20 animate-fade-in">
               <Sparkles size={16} className="text-galaxy-accent mr-2" />
-              <span className="text-sm font-medium">AI-Powered Voice</span>
+              <span className="text-sm font-medium">Live voice assistant</span>
             </div>
             
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4 animate-fade-in [animation-delay:200ms]">
-              <span className="text-galaxy-accent">Awaken Ambience</span>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 animate-fade-in [animation-delay:200ms]">
+              You're Live Now With <span className="text-galaxy-accent">Awaken Ambience</span> Voice Assistant
             </h1>
             
-            <p className="text-xl md:text-2xl text-gray-300 mb-6 font-light animate-fade-in [animation-delay:300ms]">
-              Your voice, amplified by AI
-            </p>
-            
             <p className="text-lg text-gray-300 mb-8 max-w-xl mx-auto lg:mx-0 animate-fade-in [animation-delay:400ms]">
-              Experience real-time voice interaction with our advanced AI assistant. Speak naturally and watch as your words come to life.
+              Experience real-time voice interaction with ElevenLabs AI. This demo shows how our assistant processes audio input and responds naturally to your voice.
             </p>
             
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start animate-fade-in [animation-delay:600ms] relative z-20">
