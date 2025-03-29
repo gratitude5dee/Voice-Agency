@@ -21,12 +21,16 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening }) => {
     const colors = new Float32Array(count * 3);
     const sizes = new Float32Array(count);
     
-    // Initialize particles in a better distributed sphere
-    const maxRadius = isMobile ? 3.5 : 4.5; // Slightly larger radius for better spread
+    // Initialize particles with wider distribution and random orbital shells
+    const maxRadius = isMobile ? 4 : 5; // Wider spread
     
     for (let i = 0; i < count; i++) {
-      // Improved distribution in a sphere to avoid clumping
-      const radius = maxRadius * Math.pow(Math.random(), 0.6); // More particles toward edges
+      // Create multiple orbital shells with various radiuses
+      // Use pow distribution to create more interesting patterns
+      const shellFactor = Math.random();
+      const radius = maxRadius * Math.pow(shellFactor, 0.4); // More particles toward edges
+      
+      // Add slight randomness to initial positions for more organic feel
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos(2 * Math.random() - 1);
       
@@ -38,21 +42,24 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening }) => {
       positions[i * 3 + 1] = y;
       positions[i * 3 + 2] = z;
       
-      // Colors (purple to pink gradient)
-      const hue = 0.75 + Math.random() * 0.1; // Purple to pink range
-      const color = new THREE.Color().setHSL(hue, 0.8, 0.6);
+      // More diverse initial color range (blues to purples to pinks)
+      const hue = 0.6 + Math.random() * 0.3; // Wider color range
+      const sat = 0.7 + Math.random() * 0.3; // More varied saturation
+      const light = 0.5 + Math.random() * 0.3; // More varied brightness
+      
+      const color = new THREE.Color().setHSL(hue, sat, light);
       colors[i * 3] = color.r;
       colors[i * 3 + 1] = color.g;
       colors[i * 3 + 2] = color.b;
       
-      // Varied sizes - smaller on mobile
-      sizes[i] = Math.random() * (isMobile ? 0.4 : 0.5) + (isMobile ? 0.3 : 0.5);
+      // More varied sizes
+      sizes[i] = Math.random() * (isMobile ? 0.5 : 0.6) + (isMobile ? 0.3 : 0.4);
     }
     
     return { positions, colors, sizes, count };
   });
   
-  // Update particles animation with better distribution
+  // Update particles animation with improved color transitions and movement
   useFrame(({ clock }) => {
     if (!particlesRef.current) return;
     
@@ -66,7 +73,14 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening }) => {
     const scale = isListening ? baseScale * 1.1 : baseScale;
     
     // Maximum allowed distance from center to keep particles in view
-    const maxAllowedDistance = isMobile ? 4.5 : 5.5;
+    const maxAllowedDistance = isMobile ? 5 : 6;
+    
+    // Get average audio intensity for global effects
+    let globalAudioIntensity = 0;
+    if (isListening && audioData && audioData.length > 0) {
+      const sum = Array.from(audioData).reduce((acc, val) => acc + val, 0);
+      globalAudioIntensity = Math.min(sum / (audioData.length * 255), 1);
+    }
     
     for (let i = 0; i < particles.count; i++) {
       const i3 = i * 3;
@@ -80,37 +94,78 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening }) => {
       const distance = Math.sqrt(x*x + y*y + z*z);
       const normalizedDist = distance / maxAllowedDistance;
       
-      // Audio reactivity - more controlled
+      // Audio reactivity per particle
       let audioIntensity = 0;
       if (isListening && audioData && i < audioData.length) {
         const audioIndex = Math.floor(i % audioData.length);
         // Cap the audio intensity to prevent extreme expansion
-        audioIntensity = Math.min(audioData[audioIndex] / 255, 0.8);
+        audioIntensity = Math.min(audioData[audioIndex] / 255, 0.9);
       }
       
-      // Gentler wave effect with better spread
-      const waveX = Math.sin(time * 0.7 + x) * 0.2;
-      const waveY = Math.cos(time * 0.8 + y) * 0.2;
-      const waveZ = Math.sin(time * 0.9 + z) * 0.2;
+      // Smooth color transitions - even when idle
+      // Each particle gets its own unique color cycle based on its index and time
+      const particleColorCycle = (time * 0.05) + (i * 0.0003);
       
-      // Slower breathing effect for stability
-      const breathe = (Math.sin(time * 0.5) * 0.3 + 0.5) * 0.3 + 0.7;
+      // Base idle color transition - gentle shifts through spectrum
+      const idleHue = (0.6 + Math.sin(particleColorCycle) * 0.2) % 1; // Slowly cycle colors
+      const idleSat = 0.7 + Math.sin(time * 0.2 + i * 0.01) * 0.1;
+      const idleLight = 0.6 + Math.sin(time * 0.3 + i * 0.02) * 0.1;
       
-      // More contained audio-reactive displacement
-      const audioDisplacement = isListening ? (audioIntensity * 0.9) : 0;
+      // Audio reactive color - more vibrant and responsive 
+      let finalHue, finalSat, finalLight;
       
-      // Apply all effects with constraints
-      const finalScale = scale * breathe * (1 + audioDisplacement * 0.3);
+      if (isListening && audioIntensity > 0.1) {
+        // Enhance color vibrancy with audio
+        finalHue = (idleHue + audioIntensity * 0.3) % 1; // Shift hue based on audio
+        finalSat = Math.min(1, idleSat + audioIntensity * 0.3); // More saturated with audio
+        finalLight = Math.min(1, idleLight + audioIntensity * 0.4); // Brighter with audio
+      } else {
+        finalHue = idleHue;
+        finalSat = idleSat;
+        finalLight = idleLight;
+      }
       
-      // Calculate new position - with repulsion force to prevent collapse
-      let newX = x * finalScale + waveX * (1 + audioDisplacement * 0.5);
-      let newY = y * finalScale + waveY * (1 + audioDisplacement * 0.5);
-      let newZ = z * finalScale + waveZ * (1 + audioDisplacement * 0.5);
+      // Update color
+      const color = new THREE.Color().setHSL(finalHue, finalSat, finalLight);
+      colors[i3] = color.r;
+      colors[i3 + 1] = color.g;
+      colors[i3 + 2] = color.b;
       
-      // Apply a slight repulsion force from center to prevent collapse
+      // More diverse movement patterns
+      // Use unique orbital paths that vary with audio
+      const orbitSpeed = 0.1 + (i % 5) * 0.01 + (audioIntensity * 0.3);
+      const orbitRadius = distance * (1 + (audioIntensity * 0.5));
+      const orbitPhase = (time * orbitSpeed) + (i * 0.01);
+      
+      // Create orbital motion around the particle's basic path
+      const orbitX = Math.sin(orbitPhase * 1.1) * 0.3;
+      const orbitY = Math.cos(orbitPhase * 0.9) * 0.3;
+      const orbitZ = Math.sin(orbitPhase * 1.3) * 0.3;
+      
+      // Wave effects that propagate through the entire field
+      const waveX = Math.sin(time * 0.7 + y * 0.5) * 0.3;
+      const waveY = Math.cos(time * 0.8 + z * 0.5) * 0.3;
+      const waveZ = Math.sin(time * 0.9 + x * 0.5) * 0.3;
+      
+      // Breathing effect - slower and more natural
+      const breathe = (Math.sin(time * 0.4) * 0.2 + 0.9);
+      
+      // Audio-reactive displacement - expand the particle field with sound
+      const audioDisplacement = isListening ? (audioIntensity * 1.2) : 0;
+      const globalDisplacement = isListening ? (globalAudioIntensity * 0.6) : 0;
+      
+      // Calculate expansion factor
+      const expansionFactor = scale * breathe * (1 + globalDisplacement);
+      
+      // Calculate new position with all effects combined
+      let newX = x * expansionFactor + waveX + orbitX * (1 + audioDisplacement);
+      let newY = y * expansionFactor + waveY + orbitY * (1 + audioDisplacement);
+      let newZ = z * expansionFactor + waveZ + orbitZ * (1 + audioDisplacement);
+      
+      // Apply a slight repulsion force to prevent particles clumping
       const centerDist = Math.sqrt(newX*newX + newY*newY + newZ*newZ);
-      if (centerDist < 1.5) { // If too close to center
-        const repulsionFactor = 1.5 / Math.max(0.1, centerDist);
+      if (centerDist < 1.8) { // If too close to center
+        const repulsionFactor = 1.8 / Math.max(0.1, centerDist);
         newX *= repulsionFactor;
         newY *= repulsionFactor;
         newZ *= repulsionFactor;
@@ -126,24 +181,15 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening }) => {
         newZ *= scaleFactor;
       }
       
-      // Update position with contained boundaries
+      // Update position
       positions[i3] = newX;
       positions[i3 + 1] = newY;
       positions[i3 + 2] = newZ;
       
-      // Update size based on audio - more constrained
+      // Update size based on audio - more varied sizes
       const baseSize = particles.sizes[i];
-      sizes[i] = baseSize * (1 + audioIntensity * 1.5);
-      
-      // Update color based on audio
-      if (isListening && audioIntensity > 0.1) {
-        // Shift color based on audio intensity
-        const hue = 0.75 + audioIntensity * 0.2; // Shift from purple toward pink
-        const color = new THREE.Color().setHSL(hue, 0.8, 0.6 + audioIntensity * 0.3);
-        colors[i3] = color.r;
-        colors[i3 + 1] = color.g;
-        colors[i3 + 2] = color.b;
-      }
+      const pulseFactor = 1 + Math.sin(time * 2 + i * 0.1) * 0.1; // Gentle pulse effect
+      sizes[i] = baseSize * pulseFactor * (1 + audioIntensity * 1.8);
     }
     
     particlesRef.current.geometry.attributes.position.needsUpdate = true;
@@ -151,15 +197,17 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening }) => {
     particlesRef.current.geometry.attributes.color.needsUpdate = true;
   });
   
-  // Particle material
+  // Improved particle material
   const particleMaterial = useMemo(() => {
     return new THREE.PointsMaterial({
       size: isMobile ? 0.08 : 0.1,
       sizeAttenuation: true,
       vertexColors: true,
       transparent: true,
-      opacity: 0.8,
+      opacity: 0.85,
       blending: THREE.AdditiveBlending,
+      // Add slight glow effect
+      depthWrite: false,
     });
   }, [isMobile]);
   
