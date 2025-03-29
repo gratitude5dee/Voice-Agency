@@ -21,7 +21,6 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ isOpen, onToggle }) => {
     },
     onDisconnect: () => {
       console.log("Disconnected from ElevenLabs voice agent");
-      toast.info("Disconnected from voice assistant");
     },
     onMessage: (message) => {
       console.log("Message received:", message);
@@ -76,55 +75,37 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ isOpen, onToggle }) => {
   };
 
   return (
-    <div className="flex flex-col items-center space-y-4">
-      <div className="flex items-center space-x-4">
-        <div className="w-full max-w-md text-center text-sm font-medium">
-          {conversation.status === 'connected' ? (
-            <span className="text-green-500 flex items-center justify-center gap-2">
-              <span className="relative flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
-              </span>
-              Voice Assistant Active
-            </span>
-          ) : (
-            <span className="text-gray-400">Voice Assistant Inactive</span>
-          )}
-        </div>
-      </div>
-      
-      <div className="flex items-center gap-2">
-        <Button 
-          onClick={onToggle}
-          className={`flex items-center space-x-2 ${
-            isOpen 
-              ? 'bg-red-500 hover:bg-red-600' 
-              : 'bg-galaxy-accent hover:bg-galaxy-accent/80'
-          }`}
-        >
-          {isOpen ? (
-            <>
-              <MicOff size={18} />
-              <span>Stop Assistant</span>
-            </>
-          ) : (
-            <>
-              <Mic size={18} />
-              <span>Start Assistant</span>
-            </>
-          )}
-        </Button>
-        
-        {conversation.status === 'connected' && (
-          <Button onClick={toggleMute} variant="outline" className="border-galaxy-accent/20">
-            {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
-          </Button>
+    <div className="flex items-center justify-center gap-2">
+      <Button 
+        onClick={onToggle}
+        className={`flex items-center space-x-2 ${
+          isOpen 
+            ? 'bg-red-500 hover:bg-red-600' 
+            : 'bg-galaxy-accent hover:bg-galaxy-accent/80'
+        }`}
+      >
+        {isOpen ? (
+          <>
+            <MicOff size={18} />
+            <span>Stop Assistant</span>
+          </>
+        ) : (
+          <>
+            <Mic size={18} />
+            <span>Start Assistant</span>
+          </>
         )}
-      </div>
+      </Button>
+      
+      {conversation.status === 'connected' && (
+        <Button onClick={toggleMute} variant="outline" className="border-galaxy-accent/20">
+          {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+        </Button>
+      )}
 
       {conversation.isSpeaking && (
-        <div className="text-sm text-galaxy-accent animate-pulse">
-          Assistant is speaking...
+        <div className="text-sm text-galaxy-accent ml-2 animate-pulse">
+          Speaking...
         </div>
       )}
     </div>
