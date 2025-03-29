@@ -1,4 +1,3 @@
-
 import React, { useRef, useMemo, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
@@ -81,13 +80,12 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening, mousePosit
       const sat = 0.5 + Math.random() * 0.3; // Less saturation
       const light = 0.2 + Math.random() * 0.3; // Darker overall
       
-      const color = new THREE.Color().setHSL(hue, sat, light);
       colors[i * 3] = color.r;
       colors[i * 3 + 1] = color.g;
       colors[i * 3 + 2] = color.b;
       
-      // More varied sizes with greater variance
-      sizes[i] = Math.random() * (isMobile ? 0.8 : 1.0) + (isMobile ? 0.2 : 0.3);
+      // More varied sizes with greater variance - REDUCED TO 25% OF ORIGINAL SIZE
+      sizes[i] = Math.random() * (isMobile ? 0.2 : 0.25) + (isMobile ? 0.05 : 0.075);
     }
     
     return { positions, colors, sizes, count };
@@ -248,13 +246,13 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening, mousePosit
       positions[i3 + 1] = newY;
       positions[i3 + 2] = newZ;
       
-      // Update size based on audio and mouse proximity
+      // Update size based on audio and mouse proximity - REDUCED TO 25% OF ORIGINAL EFFECT
       const baseSize = particles.sizes[i];
       const pulseFactor = 1 + Math.sin(time * 2 + i * 0.1) * 0.1; // Gentle pulse effect
       
       // Make particles near mouse cursor slightly larger
       const mouseProximityEffect = 1 + (mouseStrength * 0.5);
-      sizes[i] = baseSize * pulseFactor * mouseProximityEffect * (1 + audioIntensity * 1.8);
+      sizes[i] = baseSize * pulseFactor * mouseProximityEffect * (1 + audioIntensity * 0.45); // Reduced from 1.8 to 0.45
     }
     
     particlesRef.current.geometry.attributes.position.needsUpdate = true;
