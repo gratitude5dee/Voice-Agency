@@ -14,9 +14,9 @@ interface ThreeWaveformProps {
 const ThreeWaveform: React.FC<ThreeWaveformProps> = ({ isListening }) => {
   const isMobile = useIsMobile();
   
-  // Adjust camera position for mobile
-  const cameraPosition: [number, number, number] = isMobile ? [0, 2, 5] : [0, 2, 7]; // Increased distance
-  const fov = isMobile ? 70 : 55; // Reduced FOV for better depth perception
+  // Bring waveform closer to camera
+  const cameraPosition: [number, number, number] = isMobile ? [0, 1.5, 4] : [0, 1.5, 5.5];
+  const fov = isMobile ? 70 : 60;
   
   return (
     <div className="w-full h-full">
@@ -29,12 +29,11 @@ const ThreeWaveform: React.FC<ThreeWaveformProps> = ({ isListening }) => {
         <OrbitControls 
           enableZoom={false} 
           autoRotate 
-          autoRotateSpeed={0.3} // Slower rotation for better stability
+          autoRotateSpeed={0.3}
           enablePan={false}
-          maxPolarAngle={Math.PI / 1.5} // Limit how far down we can look
-          minPolarAngle={Math.PI / 3}   // Limit how far up we can look
+          maxPolarAngle={Math.PI / 1.5}
+          minPolarAngle={Math.PI / 3}
         />
-        {/* Grid with adjusted size for viewport containment */}
         <gridHelper 
           args={[isMobile ? 20 : 30, 30]} 
           position={[0, -2, 0]} 

@@ -16,24 +16,21 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening }) => {
   
   // Generate particles
   const [particles] = useState(() => {
-    // Reduce particle count on mobile devices
+    // Reduce particle count
     const count = isMobile ? 1000 : 2000;
     const positions = new Float32Array(count * 3);
     const colors = new Float32Array(count * 3);
     const sizes = new Float32Array(count);
     
-    // Initialize particles in a better distributed sphere
-    const maxRadius = isMobile ? 3.5 : 4.5; // Slightly larger radius for better spread
+    // Initialize particles in a circular pattern (like the waveform)
+    const radius = isMobile ? 1.5 : 2;
     
     for (let i = 0; i < count; i++) {
-      // Improved distribution in a sphere to avoid clumping
-      const radius = maxRadius * Math.pow(Math.random(), 0.6); // More particles toward edges
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos(2 * Math.random() - 1);
-      
-      const x = radius * Math.sin(phi) * Math.cos(theta);
-      const y = radius * Math.sin(phi) * Math.sin(theta);
-      const z = radius * Math.cos(phi);
+      // Position particles in a circle initially
+      const angle = (i / count) * Math.PI * 2;
+      const x = Math.sin(angle) * radius;
+      const y = 0;
+      const z = Math.cos(angle) * radius;
       
       positions[i * 3] = x;
       positions[i * 3 + 1] = y;
@@ -53,7 +50,7 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening }) => {
     return { positions, colors, sizes, count };
   });
   
-  // Update particles animation with better distribution
+  // Update particles to follow waveform
   useFrame(({ clock }) => {
     if (!particlesRef.current) return;
     
@@ -62,142 +59,63 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening }) => {
     const sizes = particlesRef.current.geometry.attributes.size.array as Float32Array;
     const colors = particlesRef.current.geometry.attributes.color.array as Float32Array;
     
-    // Use a smaller scale for more contained animations
-    const baseScale = isMobile ? 0.95 : 1.05;
-    const scale = isListening ? baseScale * 1.1 : baseScale;
+    // Base radius of the circular path
+    const baseRadius = isMobile ? 1.5 : 2;
     
-    // Maximum allowed distance from center to keep particles in view
-    const maxAllowedDistance = isMobile ? 4.5 : 5.5;
-    // Minimum allowed distance between particles to prevent tight collapsing
-    const minParticleDistance = isMobile ? 0.3 : 0.4;
-    
-    // Create a temporary array to store calculated new positions
-    const newPositions = new Float32Array(particles.count * 3);
-    
-    // First pass: calculate new positions based on animations and audio
+    // For each particle
     for (let i = 0; i < particles.count; i++) {
       const i3 = i * 3;
       
-      // Get original position
-      const x = particles.positions[i3];
-      const y = particles.positions[i3 + 1];
-      const z = particles.positions[i3 + 2];
+      // Map each particle to a position along the waveform circle
+      const particleIndex = i % 64; // Map to one of the 64 audio bars
+      const angle = (particleIndex / 64) * Math.PI * 2;
       
-      // Calculate normalized distance from center
-      const distance = Math.sqrt(x*x + y*y + z*z);
-      const normalizedDist = distance / maxAllowedDistance;
-      
-      // Audio reactivity - more controlled
+      // Get audio intensity for this position if listening
       let audioIntensity = 0;
-      if (isListening && audioData && i < audioData.length) {
-        const audioIndex = Math.floor(i % audioData.length);
-        // Cap the audio intensity to prevent extreme expansion
-        audioIntensity = Math.min(audioData[audioIndex] / 255, 0.8);
+      if (isListening && audioData && audioData.length > 0) {
+        const audioIndex = Math.floor(particleIndex % audioData.length);
+        audioIntensity = Math.min((audioData[audioIndex] || 0) / 255, 0.8);
       }
       
-      // Gentler wave effect with better spread
-      const waveX = Math.sin(time * 0.7 + x) * 0.2;
-      const waveY = Math.cos(time * 0.8 + y) * 0.2;
-      const waveZ = Math.sin(time * 0.9 + z) * 0.2;
-      
-      // Slower breathing effect for stability
-      const breathe = (Math.sin(time * 0.5) * 0.3 + 0.5) * 0.3 + 0.7;
-      
-      // More contained audio-reactive displacement
-      const audioDisplacement = isListening ? (audioIntensity * 0.9) : 0;
-      
-      // Apply all effects with constraints
-      const finalScale = scale * breathe * (1 + audioDisplacement * 0.3);
-      
-      // Calculate new position - with repulsion force to prevent collapse
-      let newX = x * finalScale + waveX * (1 + audioDisplacement * 0.5);
-      let newY = y * finalScale + waveY * (1 + audioDisplacement * 0.5);
-      let newZ = z * finalScale + waveZ * (1 + audioDisplacement * 0.5);
-      
-      // Apply a slight repulsion force from center to prevent collapse
-      const centerDist = Math.sqrt(newX*newX + newY*newY + newZ*newZ);
-      if (centerDist < 1.5) { // If too close to center
-        const repulsionFactor = 1.5 / Math.max(0.1, centerDist);
-        newX *= repulsionFactor;
-        newY *= repulsionFactor;
-        newZ *= repulsionFactor;
+      // Calculate height based on audio or idle animation
+      let height;
+      if (isListening && audioData) {
+        // Audio-reactive height
+        height = audioIntensity * 2;
+      } else {
+        // Idle animation - gentle wave pattern
+        height = Math.sin(angle * 8 + time * 3) * 0.4 + 0.3;
       }
       
-      // Check if the new position exceeds the maximum allowed distance
-      const newDistance = Math.sqrt(newX*newX + newY*newY + newZ*newZ);
-      if (newDistance > maxAllowedDistance) {
-        // Scale back the position to the maximum allowed distance
-        const scaleFactor = maxAllowedDistance / newDistance;
-        newX *= scaleFactor;
-        newY *= scaleFactor;
-        newZ *= scaleFactor;
-      }
+      // Add some randomization within the waveform area
+      const randomOffset = 0.15;
+      const randomX = (Math.random() - 0.5) * randomOffset;
+      const randomY = (Math.random() - 0.5) * randomOffset;
+      const randomZ = (Math.random() - 0.5) * randomOffset;
       
-      // Store the calculated position
-      newPositions[i3] = newX;
-      newPositions[i3 + 1] = newY;
-      newPositions[i3 + 2] = newZ;
+      // Calculate final position along the waveform
+      const radius = baseRadius + (Math.random() - 0.5) * 0.2;
+      const x = Math.sin(angle) * radius + randomX;
+      const y = height + randomY; // Height based on audio or animation
+      const z = Math.cos(angle) * radius + randomZ;
       
-      // Update size based on audio - more constrained
+      // Apply position with smooth lerping
+      positions[i3] = THREE.MathUtils.lerp(positions[i3], x, 0.05);
+      positions[i3 + 1] = THREE.MathUtils.lerp(positions[i3 + 1], y, 0.05);
+      positions[i3 + 2] = THREE.MathUtils.lerp(positions[i3 + 2], z, 0.05);
+      
+      // Update size based on audio
       const baseSize = particles.sizes[i];
-      sizes[i] = baseSize * (1 + audioIntensity * 1.5);
+      sizes[i] = baseSize * (1 + (audioIntensity * 1.2));
       
-      // Update color based on audio
-      if (isListening && audioIntensity > 0.1) {
-        // Shift color based on audio intensity
-        const hue = 0.75 + audioIntensity * 0.2; // Shift from purple toward pink
-        const color = new THREE.Color().setHSL(hue, 0.8, 0.6 + audioIntensity * 0.3);
-        colors[i3] = color.r;
-        colors[i3 + 1] = color.g;
-        colors[i3 + 2] = color.b;
-      }
-    }
-    
-    // Second pass: apply particle-to-particle repulsion to prevent clumping
-    // Only check against a subset of nearby particles for performance
-    for (let i = 0; i < particles.count; i++) {
-      const i3 = i * 3;
-      let totalRepulsionX = 0;
-      let totalRepulsionY = 0;
-      let totalRepulsionZ = 0;
-      
-      // Check against a random subset of particles (about 10%)
-      const checkCount = Math.min(particles.count, 200);
-      for (let j = 0; j < checkCount; j++) {
-        // Pick a random particle
-        const randomIndex = Math.floor(Math.random() * particles.count);
-        if (randomIndex === i) continue; // Skip self
-        
-        const j3 = randomIndex * 3;
-        
-        // Calculate distance between particles
-        const dx = newPositions[i3] - newPositions[j3];
-        const dy = newPositions[i3 + 1] - newPositions[j3 + 1];
-        const dz = newPositions[i3 + 2] - newPositions[j3 + 2];
-        const distSq = dx*dx + dy*dy + dz*dz;
-        const dist = Math.sqrt(distSq);
-        
-        // Apply repulsion if particles are too close
-        if (dist < minParticleDistance) {
-          // Repulsion strength inversely proportional to distance
-          const repulsionStrength = 0.05 * (minParticleDistance - dist) / minParticleDistance;
-          
-          // Normalize direction vector
-          const nx = dx / dist;
-          const ny = dy / dist;
-          const nz = dz / dist;
-          
-          // Accumulate repulsion force
-          totalRepulsionX += nx * repulsionStrength;
-          totalRepulsionY += ny * repulsionStrength;
-          totalRepulsionZ += nz * repulsionStrength;
-        }
-      }
-      
-      // Apply accumulated repulsion to particle position
-      positions[i3] = newPositions[i3] + totalRepulsionX;
-      positions[i3 + 1] = newPositions[i3 + 1] + totalRepulsionY;
-      positions[i3 + 2] = newPositions[i3 + 2] + totalRepulsionZ;
+      // Update color based on height/audio intensity
+      const hue = 0.75 + (height * 0.1); // Shift hue based on height
+      const saturation = 0.7 + (audioIntensity * 0.3);
+      const lightness = 0.5 + (audioIntensity * 0.3);
+      const color = new THREE.Color().setHSL(hue, saturation, lightness);
+      colors[i3] = THREE.MathUtils.lerp(colors[i3], color.r, 0.1);
+      colors[i3 + 1] = THREE.MathUtils.lerp(colors[i3 + 1], color.g, 0.1);
+      colors[i3 + 2] = THREE.MathUtils.lerp(colors[i3 + 2], color.b, 0.1);
     }
     
     particlesRef.current.geometry.attributes.position.needsUpdate = true;
