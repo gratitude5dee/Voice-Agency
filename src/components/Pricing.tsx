@@ -1,6 +1,6 @@
-
 import { Check, ArrowRight } from 'lucide-react';
 import { useEffect, useRef } from 'react';
+import { RainbowButton } from './ui/rainbow-button';
 
 const Pricing = () => {
   const pricingRef = useRef<HTMLDivElement>(null);
@@ -71,11 +71,8 @@ const Pricing = () => {
                 </li>
               </ul>
               
-              <a 
-                href="#waitlist" 
-                className="secondary-button text-center mt-auto"
-              >
-                Join Waitlist
+              <a href="#waitlist" className="mt-auto">
+                <RainbowButton className="w-full">Join Waitlist</RainbowButton>
               </a>
             </div>
           </div>
@@ -125,12 +122,11 @@ const Pricing = () => {
                 </li>
               </ul>
               
-              <a 
-                href="#waitlist" 
-                className="primary-button text-center mt-auto group"
-              >
-                Contact Sales
-                <ArrowRight className="w-4 h-4 inline-block ml-2 transition-transform group-hover:translate-x-1" />
+              <a href="#waitlist" className="mt-auto group">
+                <RainbowButton className="w-full flex items-center justify-center">
+                  Contact Sales
+                  <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
+                </RainbowButton>
               </a>
             </div>
           </div>

@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { Sparkles, Menu, X } from 'lucide-react';
+import { RainbowButton } from './ui/rainbow-button';
 
 const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -42,8 +43,8 @@ const Navigation = () => {
             <a href="#features" className="nav-link">Features</a>
             <a href="#pricing" className="nav-link">Pricing</a>
           </div>
-          <a href="#waitlist" className="primary-button">
-            Join Waitlist
+          <a href="#waitlist">
+            <RainbowButton>Join Waitlist</RainbowButton>
           </a>
         </div>
 
@@ -83,10 +84,9 @@ const Navigation = () => {
           </a>
           <a 
             href="#waitlist" 
-            className="primary-button text-center"
             onClick={() => setIsMobileMenuOpen(false)}
           >
-            Join Waitlist
+            <RainbowButton className="w-full">Join Waitlist</RainbowButton>
           </a>
         </div>
       </div>

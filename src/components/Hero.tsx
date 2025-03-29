@@ -3,6 +3,7 @@ import { useRef, useState } from 'react';
 import { Sparkles, Zap } from 'lucide-react';
 import ThreeWaveform from './ThreeWaveform';
 import VoiceAgent from './VoiceAgent';
+import { RainbowButton } from './ui/rainbow-button';
 
 const Hero = () => {
   const starsContainerRef = useRef<HTMLDivElement>(null);
