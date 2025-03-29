@@ -1,3 +1,4 @@
+
 import * as THREE from 'three';
 
 // Animation utilities for idle state - more contained
@@ -39,7 +40,7 @@ export const animateIdleBar = (
   }
 };
 
-// Animation utilities for audio-reactive state - more vertical, less lateral
+// Animation utilities for audio-reactive state - with 10x higher vertical stretch
 export const animateAudioReactiveBar = (
   bar: THREE.Mesh,
   i: number, 
@@ -48,8 +49,8 @@ export const animateAudioReactiveBar = (
   angle: number,
   audioIntensity: number
 ) => {
-  // Enhanced vertical reactivity with limited horizontal movement
-  const targetHeight = Math.max(0.1, audioIntensity * 10); // More vertical scaling
+  // Enhanced vertical reactivity with 10x higher scaling
+  const targetHeight = Math.max(0.1, audioIntensity * 100); // 10x more vertical scaling than before
   bar.scale.y = THREE.MathUtils.lerp(bar.scale.y, targetHeight, 0.5);
   
   // Much more contained horizontal movement - keep a tighter circle
