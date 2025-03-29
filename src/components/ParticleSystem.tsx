@@ -1,4 +1,3 @@
-
 import React, { useRef, useMemo, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
@@ -34,8 +33,8 @@ const fragmentShader = `
       discard;
     }
     
-    // Apply a soft glow effect
-    alpha = 1.0 - smoothstep(0.8, 1.0, r);
+    // Apply a softer glow effect with increased falloff for more transparency
+    alpha = 0.6 * (1.0 - smoothstep(0.5, 1.0, r));
     
     gl_FragColor = vec4(vColor, alpha);
   }
@@ -48,14 +47,14 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening }) => {
   
   // Generate particles
   const [particles] = useState(() => {
-    // Reduce particle count on mobile devices
-    const count = isMobile ? 1000 : 2000;
+    // Reduce particle count
+    const count = isMobile ? 800 : 1500;
     const positions = new Float32Array(count * 3);
     const colors = new Float32Array(count * 3);
     const sizes = new Float32Array(count);
     
     // Initialize particles with wider distribution and random orbital shells
-    const maxRadius = isMobile ? 4 : 5; // Wider spread
+    const maxRadius = isMobile ? 6 : 8; // Place particles further back
     
     for (let i = 0; i < count; i++) {
       // Create multiple orbital shells with various radiuses
@@ -69,24 +68,24 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening }) => {
       
       const x = radius * Math.sin(phi) * Math.cos(theta);
       const y = radius * Math.sin(phi) * Math.sin(theta);
-      const z = radius * Math.cos(phi);
+      const z = radius * Math.cos(phi) - 5; // Push particles further back
       
       positions[i * 3] = x;
       positions[i * 3 + 1] = y;
       positions[i * 3 + 2] = z;
       
-      // More diverse initial color range (blues to purples to pinks)
-      const hue = 0.6 + Math.random() * 0.3; // Wider color range
-      const sat = 0.7 + Math.random() * 0.3; // More varied saturation
-      const light = 0.5 + Math.random() * 0.3; // More varied brightness
+      // Darker colors with more subtle tones
+      const hue = 0.6 + Math.random() * 0.3; 
+      const sat = 0.5 + Math.random() * 0.3; // Less saturation
+      const light = 0.2 + Math.random() * 0.3; // Darker overall
       
       const color = new THREE.Color().setHSL(hue, sat, light);
       colors[i * 3] = color.r;
       colors[i * 3 + 1] = color.g;
       colors[i * 3 + 2] = color.b;
       
-      // More varied sizes
-      sizes[i] = Math.random() * (isMobile ? 0.5 : 0.6) + (isMobile ? 0.3 : 0.4);
+      // More varied sizes with greater variance
+      sizes[i] = Math.random() * (isMobile ? 0.8 : 1.0) + (isMobile ? 0.2 : 0.3);
     }
     
     return { positions, colors, sizes, count };
@@ -106,7 +105,7 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening }) => {
     const scale = isListening ? baseScale * 1.1 : baseScale;
     
     // Maximum allowed distance from center to keep particles in view
-    const maxAllowedDistance = isMobile ? 5 : 6;
+    const maxAllowedDistance = isMobile ? 7 : 9;
     
     // Get average audio intensity for global effects
     let globalAudioIntensity = 0;
@@ -141,17 +140,17 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening }) => {
       
       // Base idle color transition - gentle shifts through spectrum
       const idleHue = (0.6 + Math.sin(particleColorCycle) * 0.2) % 1; // Slowly cycle colors
-      const idleSat = 0.7 + Math.sin(time * 0.2 + i * 0.01) * 0.1;
-      const idleLight = 0.6 + Math.sin(time * 0.3 + i * 0.02) * 0.1;
+      const idleSat = 0.5 + Math.sin(time * 0.2 + i * 0.01) * 0.1; // Lower saturation
+      const idleLight = 0.3 + Math.sin(time * 0.3 + i * 0.02) * 0.1; // Darker brightness
       
       // Audio reactive color - more vibrant and responsive 
       let finalHue, finalSat, finalLight;
       
       if (isListening && audioIntensity > 0.1) {
-        // Enhance color vibrancy with audio
+        // Enhance color vibrancy with audio, but keep it darker
         finalHue = (idleHue + audioIntensity * 0.3) % 1; // Shift hue based on audio
-        finalSat = Math.min(1, idleSat + audioIntensity * 0.3); // More saturated with audio
-        finalLight = Math.min(1, idleLight + audioIntensity * 0.4); // Brighter with audio
+        finalSat = Math.min(0.7, idleSat + audioIntensity * 0.3); // Less saturated than before
+        finalLight = Math.min(0.5, idleLight + audioIntensity * 0.4); // Keep darker even with audio
       } else {
         finalHue = idleHue;
         finalSat = idleSat;

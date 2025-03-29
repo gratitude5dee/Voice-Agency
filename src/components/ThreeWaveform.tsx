@@ -25,6 +25,7 @@ const ThreeWaveform: React.FC<ThreeWaveformProps> = ({ isListening }) => {
         <pointLight position={[0, 5, 0]} intensity={1} color="#ffffff" />
         <pointLight position={[5, 0, 5]} intensity={0.8} color="#9B87F5" />
         <AudioAnalyzer isListening={isListening} />
+        {/* Place ParticleSystem first so it renders in the background */}
         <ParticleSystem isListening={isListening} />
         <OrbitControls 
           enableZoom={false} 
