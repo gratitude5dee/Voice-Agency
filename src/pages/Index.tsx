@@ -7,11 +7,18 @@ import WaitlistForm from "../components/WaitlistForm";
 import Footer from "../components/Footer";
 import { useEffect } from "react";
 import { Toaster } from "sonner";
+import { toast } from "sonner";
 
 const Index = () => {
   useEffect(() => {
     // Update document title
-    document.title = "Awaken Ambience | See and Understand";
+    document.title = "Awaken Ambience | Live Voice Assistant";
+    
+    // Show toast message for microphone access
+    toast.info("This demo requires microphone access for voice visualization", {
+      duration: 5000,
+      position: "top-center",
+    });
     
     // Smooth scroll for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {

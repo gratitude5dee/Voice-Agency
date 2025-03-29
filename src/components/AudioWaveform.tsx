@@ -143,11 +143,11 @@ const AudioWaveform: React.FC<AudioWaveformProps> = ({ isListening, onToggle }) 
 
   return (
     <div className="flex flex-col items-center">
-      <div className="relative w-full h-80 bg-galaxy-dark/30 rounded-xl backdrop-blur-sm overflow-hidden mb-4">
+      <div className="relative w-full h-60 bg-galaxy-dark/30 rounded-xl backdrop-blur-sm overflow-hidden mb-4">
         <canvas 
           ref={canvasRef} 
           width={800} 
-          height={300} 
+          height={240} 
           className="w-full h-full"
         />
         

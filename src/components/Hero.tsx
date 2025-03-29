@@ -1,11 +1,10 @@
-
 import { useEffect, useRef, useState } from 'react';
 import { Sparkles } from 'lucide-react';
-import DemoModal from './DemoModal';
+import AudioWaveform from './AudioWaveform';
 
 const Hero = () => {
   const starsContainerRef = useRef<HTMLDivElement>(null);
-  const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
+  const [isListening, setIsListening] = useState(true); // Auto-start listening
   
   useEffect(() => {
     if (!starsContainerRef.current) return;
@@ -57,6 +56,10 @@ const Hero = () => {
     };
   }, []);
   
+  const handleToggleMicrophone = () => {
+    setIsListening(prev => !prev);
+  };
+  
   const handleElementHover = (e: React.MouseEvent<HTMLElement>) => {
     const element = e.currentTarget;
     const rect = element.getBoundingClientRect();
@@ -74,11 +77,6 @@ const Hero = () => {
     }, 800);
   };
 
-  const openDemoModal = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setIsDemoModalOpen(true);
-  };
-
   return (
     <section className="relative min-h-screen flex items-center pt-24 pb-16 overflow-hidden">
       <div ref={starsContainerRef} className="stars-container"></div>
@@ -91,15 +89,15 @@ const Hero = () => {
           <div className="w-full lg:w-1/2 text-center lg:text-left">
             <div className="inline-flex items-center px-3 py-1 mb-6 rounded-full bg-galaxy-purple/30 border border-galaxy-accent/20 animate-fade-in">
               <Sparkles size={16} className="text-galaxy-accent mr-2" />
-              <span className="text-sm font-medium">Next-generation assistance</span>
+              <span className="text-sm font-medium">Live voice assistant</span>
             </div>
             
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 animate-fade-in [animation-delay:200ms]">
-              Meet Awaken Ambience: The Voice Assistant That <span className="text-galaxy-accent">Sees</span> and <span className="text-galaxy-accent">Understands</span>
+              You're Live Now With <span className="text-galaxy-accent">Awaken Ambience</span> Voice Assistant
             </h1>
             
             <p className="text-lg text-gray-300 mb-8 max-w-xl mx-auto lg:mx-0 animate-fade-in [animation-delay:400ms]">
-              Awaken Ambience goes beyond Siri or Google Assistant with human-like memory, visual understanding, and contextual intelligence. Share your screen or camera stream and watch as it truly understands what you're looking at.
+              Experience real-time voice visualization with Awaken Ambience. This demo shows how our assistant processes audio input for a more natural interaction.
             </p>
             
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start space-y-4 sm:space-y-0 sm:space-x-4 animate-fade-in [animation-delay:600ms] relative z-20">
@@ -110,52 +108,51 @@ const Hero = () => {
               >
                 Join the Waitlist
               </a>
-              <a 
-                href="#"
-                onClick={openDemoModal} 
-                className="secondary-button w-full sm:w-auto text-center"
+              <button 
+                onClick={handleToggleMicrophone}
+                className={`secondary-button w-full sm:w-auto text-center ${isListening ? 'bg-red-500 hover:bg-red-600' : ''}`}
                 onMouseEnter={handleElementHover}
               >
-                See It in Action
-              </a>
+                {isListening ? 'Stop Demo' : 'Restart Demo'}
+              </button>
             </div>
           </div>
           
-          <div className="w-full lg:w-1/2 mt-12 lg:mt-0 flex justify-center animate-fade-in [animation-delay:800ms]">
-            <div className="relative w-full max-w-md">
-              <div className="relative w-64 h-64 mx-auto rounded-full glass-card border border-galaxy-accent/30 p-2 shadow-[0_0_50px_rgba(155,135,245,0.3)] animate-float">
-                <div className="w-full h-full rounded-full bg-gradient-to-br from-galaxy-purple to-galaxy-dark flex items-center justify-center overflow-hidden">
-                  <div className="relative w-24 h-24 rounded-full bg-galaxy-accent/20 flex items-center justify-center">
-                    <div className="absolute w-full h-full rounded-full bg-galaxy-accent/20 animate-pulse-slow"></div>
-                    <div className="absolute w-full h-full rounded-full bg-galaxy-accent/10 animate-pulse-slow [animation-delay:1s]"></div>
-                    <div className="z-10 w-14 h-14 rounded-full bg-galaxy-accent flex items-center justify-center shadow-lg">
-                      <Sparkles className="w-7 h-7 text-white" />
-                    </div>
+          <div className="w-full lg:w-1/2 mt-12 lg:mt-0 flex flex-col justify-center items-center animate-fade-in [animation-delay:800ms]">
+            <div className="w-full max-w-md mb-8 glass-card rounded-2xl p-4 border border-galaxy-accent/30 shadow-[0_0_30px_rgba(155,135,245,0.2)]">
+              <h3 className="text-lg font-medium mb-2 text-center">Awaken Ambience Voice Visualization</h3>
+              <AudioWaveform isListening={isListening} onToggle={handleToggleMicrophone} />
+            </div>
+            
+            <div className="relative w-64 h-64 mx-auto rounded-full glass-card border border-galaxy-accent/30 p-2 shadow-[0_0_50px_rgba(155,135,245,0.3)] animate-float">
+              <div className="w-full h-full rounded-full bg-gradient-to-br from-galaxy-purple to-galaxy-dark flex items-center justify-center overflow-hidden">
+                <div className="relative w-24 h-24 rounded-full bg-galaxy-accent/20 flex items-center justify-center">
+                  <div className="absolute w-full h-full rounded-full bg-galaxy-accent/20 animate-pulse-slow"></div>
+                  <div className="absolute w-full h-full rounded-full bg-galaxy-accent/10 animate-pulse-slow [animation-delay:1s]"></div>
+                  <div className="z-10 w-14 h-14 rounded-full bg-galaxy-accent flex items-center justify-center shadow-lg">
+                    <Sparkles className="w-7 h-7 text-white" />
                   </div>
-                  
-                  <div className="absolute w-full h-full rounded-full border border-galaxy-accent/20 opacity-0 animate-ping [animation-duration:3s]"></div>
-                  <div className="absolute w-full h-full rounded-full border border-galaxy-accent/20 opacity-0 animate-ping [animation-duration:3s] [animation-delay:1s]"></div>
                 </div>
+                
+                <div className="absolute w-full h-full rounded-full border border-galaxy-accent/20 opacity-0 animate-ping [animation-duration:3s]"></div>
+                <div className="absolute w-full h-full rounded-full border border-galaxy-accent/20 opacity-0 animate-ping [animation-duration:3s] [animation-delay:1s]"></div>
               </div>
-              
-              <div className="absolute -top-4 right-16 w-20 h-20 rounded-xl glass-card p-4 flex items-center justify-center animate-float [animation-delay:1s]">
-                <Cloud className="w-10 h-10 text-galaxy-accent" />
-              </div>
-              
-              <div className="absolute top-1/2 -left-6 w-20 h-20 rounded-xl glass-card p-4 flex items-center justify-center animate-float [animation-delay:2s]">
-                <Search className="w-10 h-10 text-galaxy-accent" />
-              </div>
-              
-              <div className="absolute -bottom-4 right-20 w-20 h-20 rounded-xl glass-card p-4 flex items-center justify-center animate-float [animation-delay:1.5s]">
-                <Camera className="w-10 h-10 text-galaxy-accent" />
-              </div>
+            </div>
+            
+            <div className="absolute -top-4 right-16 w-20 h-20 rounded-xl glass-card p-4 flex items-center justify-center animate-float [animation-delay:1s]">
+              <Cloud className="w-10 h-10 text-galaxy-accent" />
+            </div>
+            
+            <div className="absolute top-1/2 -left-6 w-20 h-20 rounded-xl glass-card p-4 flex items-center justify-center animate-float [animation-delay:2s]">
+              <Search className="w-10 h-10 text-galaxy-accent" />
+            </div>
+            
+            <div className="absolute -bottom-4 right-20 w-20 h-20 rounded-xl glass-card p-4 flex items-center justify-center animate-float [animation-delay:1.5s]">
+              <Camera className="w-10 h-10 text-galaxy-accent" />
             </div>
           </div>
         </div>
       </div>
-
-      {/* Demo Modal */}
-      <DemoModal isOpen={isDemoModalOpen} onClose={() => setIsDemoModalOpen(false)} />
     </section>
   );
 };
