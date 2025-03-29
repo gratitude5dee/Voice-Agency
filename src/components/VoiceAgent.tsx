@@ -8,9 +8,10 @@ import { toast } from 'sonner';
 interface VoiceAgentProps {
   isOpen: boolean;
   onToggle: () => void;
+  isListening?: boolean;
 }
 
-const VoiceAgent: React.FC<VoiceAgentProps> = ({ isOpen, onToggle }) => {
+const VoiceAgent: React.FC<VoiceAgentProps> = ({ isOpen, onToggle, isListening }) => {
   const [isMuted, setIsMuted] = useState(false);
   const [agentId, setAgentId] = useState<string>('TJSzYuSKas1pB1x0u2AW');
   

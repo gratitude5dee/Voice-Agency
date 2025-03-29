@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from 'react';
 import { Sparkles } from 'lucide-react';
 import AudioWaveform from './AudioWaveform';
@@ -6,8 +5,7 @@ import VoiceAgent from './VoiceAgent';
 
 const Hero = () => {
   const starsContainerRef = useRef<HTMLDivElement>(null);
-  const [isListening, setIsListening] = useState(true); // Auto-start listening
-  const [isVoiceAgentActive, setIsVoiceAgentActive] = useState(true); // Auto-start voice agent
+  const [isActive, setIsActive] = useState(false);
   
   useEffect(() => {
     if (!starsContainerRef.current) return;
@@ -59,12 +57,8 @@ const Hero = () => {
     };
   }, []);
   
-  const handleToggleMicrophone = () => {
-    setIsListening(prev => !prev);
-  };
-
-  const handleToggleVoiceAgent = () => {
-    setIsVoiceAgentActive(prev => !prev);
+  const toggleAssistant = () => {
+    setIsActive(prev => !prev);
   };
   
   const handleElementHover = (e: React.MouseEvent<HTMLElement>) => {
@@ -115,13 +109,11 @@ const Hero = () => {
               >
                 Join the Waitlist
               </a>
-              <button 
-                onClick={handleToggleMicrophone}
-                className={`secondary-button w-full sm:w-auto text-center ${isListening ? 'bg-red-500 hover:bg-red-600' : ''}`}
-                onMouseEnter={handleElementHover}
-              >
-                {isListening ? 'Stop Demo' : 'Restart Demo'}
-              </button>
+              
+              <VoiceAgent 
+                isOpen={isActive} 
+                onToggle={toggleAssistant}
+              />
             </div>
           </div>
           
@@ -129,8 +121,7 @@ const Hero = () => {
             <div className="w-full max-w-md mb-8 glass-card rounded-2xl p-4 border border-galaxy-accent/30 shadow-[0_0_30px_rgba(155,135,245,0.2)]">
               <h3 className="text-lg font-medium mb-2 text-center">Awaken Ambience Voice Interaction</h3>
               <div className="space-y-6">
-                <AudioWaveform isListening={isListening} onToggle={handleToggleMicrophone} />
-                <VoiceAgent isOpen={isVoiceAgentActive} onToggle={handleToggleVoiceAgent} />
+                {isActive && <AudioWaveform isListening={isActive} onToggle={toggleAssistant} />}
               </div>
             </div>
             
