@@ -4,6 +4,7 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { animateIdleBar, animateAudioReactiveBar } from '@/utils/waveformAnimations';
 import { useAudioData } from '@/hooks/useAudioData';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface AudioAnalyzerProps {
   isListening: boolean;
@@ -17,6 +18,7 @@ const AudioAnalyzer: React.FC<AudioAnalyzerProps> = ({ isListening }) => {
   const streamRef = useRef<MediaStream | null>(null);
   const requestRef = useRef<number | null>(null);
   const { setAudioData } = useAudioData();
+  const isMobile = useIsMobile();
   
   // Set up audio analyzer
   useEffect(() => {
@@ -95,7 +97,7 @@ const AudioAnalyzer: React.FC<AudioAnalyzerProps> = ({ isListening }) => {
     };
   }, [isListening, setAudioData]);
   
-  // Animate the 3D bars based on audio data
+  // Animate the 3D bars based on audio data, with more vertical movement and less lateral expansion
   useFrame(({ clock }) => {
     if (!barsRef.current) return;
     
@@ -120,8 +122,8 @@ const AudioAnalyzer: React.FC<AudioAnalyzerProps> = ({ isListening }) => {
     }
   });
   
-  // Circle diameter (reduced from 3 to 2)
-  const circleRadius = 2;
+  // Circle diameter - smaller on mobile
+  const circleRadius = isMobile ? 1.5 : 2;
   
   return (
     <group ref={barsRef} position={[0, -1.5, 0]}>
@@ -133,7 +135,7 @@ const AudioAnalyzer: React.FC<AudioAnalyzerProps> = ({ isListening }) => {
         
         return (
           <mesh key={i} position={[x, 0, z]}>
-            <boxGeometry args={[0.15, 0.05, 0.15]} />
+            <boxGeometry args={[isMobile ? 0.12 : 0.15, 0.05, isMobile ? 0.12 : 0.15]} />
             <meshStandardMaterial 
               color="#9B87F5" 
               emissive="#3F2D8C"

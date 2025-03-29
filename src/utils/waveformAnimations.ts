@@ -1,7 +1,7 @@
 
 import * as THREE from 'three';
 
-// Animation utilities for idle state
+// Animation utilities for idle state - more contained
 export const animateIdleBar = (
   bar: THREE.Mesh,
   i: number, 
@@ -9,25 +9,25 @@ export const animateIdleBar = (
   time: number, 
   angle: number
 ) => {
-  // Enhanced idle animation with more extreme wave patterns
-  const wave = Math.sin(angle * 8 + time * 3) * 0.6 + 0.7;
-  const secondaryWave = Math.cos(angle * 4 + time * 2) * 0.4;
+  // More constrained idle animation with predominantly vertical movement
+  const wave = Math.sin(angle * 8 + time * 3) * 0.4 + 0.7;
+  const secondaryWave = Math.cos(angle * 4 + time * 2) * 0.3;
   const combinedWave = wave + secondaryWave;
   
-  // Scale the bar based on the wave pattern
+  // Scale the bar vertically based on the wave pattern
   bar.scale.y = THREE.MathUtils.lerp(bar.scale.y, combinedWave, 0.1);
   
-  // More dramatic breathing effect for the circle radius
-  const breathingRadius = 2 + Math.sin(time * 0.8) * 0.8;
+  // Less dramatic breathing effect for the circle radius
+  const breathingRadius = 2 + Math.sin(time * 0.8) * 0.4;
   const x = Math.sin(angle) * breathingRadius;
   const z = Math.cos(angle) * breathingRadius;
   
-  // Update bar position
+  // Update bar position with gentler lateral movement
   bar.position.x = THREE.MathUtils.lerp(bar.position.x, x, 0.1);
   bar.position.z = THREE.MathUtils.lerp(bar.position.z, z, 0.1);
   
-  // More extreme movement in idle state
-  const yOffset = Math.sin(angle * 5 + time * 1.5) * 0.4;
+  // More vertical movement in idle state
+  const yOffset = Math.sin(angle * 5 + time * 1.5) * 0.3;
   bar.position.y = yOffset;
   
   // Update bar material
@@ -40,7 +40,7 @@ export const animateIdleBar = (
   }
 };
 
-// Animation utilities for audio-reactive state
+// Animation utilities for audio-reactive state - more vertical, less lateral
 export const animateAudioReactiveBar = (
   bar: THREE.Mesh,
   i: number, 
@@ -49,18 +49,19 @@ export const animateAudioReactiveBar = (
   angle: number,
   audioIntensity: number
 ) => {
-  // Super enhanced audio reactivity with more dramatic scaling (10x more drastic)
-  const targetHeight = Math.max(0.1, audioIntensity * 15);
+  // Enhanced vertical reactivity with limited horizontal movement
+  const targetHeight = Math.max(0.1, audioIntensity * 10); // More vertical scaling
   bar.scale.y = THREE.MathUtils.lerp(bar.scale.y, targetHeight, 0.5);
   
-  // Greatly enhanced horizontal movement based on audio intensity
+  // Limited horizontal movement based on audio intensity
   const freqIntensity = audioIntensity;
-  const radiusModulation = 2 + freqIntensity * 2.5;
+  const radiusModulation = 2 + freqIntensity * 1.2; // Reduced lateral expansion
   const x = Math.sin(angle) * radiusModulation;
   const z = Math.cos(angle) * radiusModulation;
   
-  bar.position.x = THREE.MathUtils.lerp(bar.position.x, x, 0.25);
-  bar.position.z = THREE.MathUtils.lerp(bar.position.z, z, 0.25);
+  // Slower position updates to reduce jerky movements
+  bar.position.x = THREE.MathUtils.lerp(bar.position.x, x, 0.15);
+  bar.position.z = THREE.MathUtils.lerp(bar.position.z, z, 0.15);
   
   // Enhanced vertical bounce based on audio
   const yOffset = Math.sin(time * 3 + i * 0.3) * 0.5 * freqIntensity;
