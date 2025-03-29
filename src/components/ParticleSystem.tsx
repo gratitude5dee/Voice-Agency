@@ -1,3 +1,4 @@
+
 import React, { useRef, useMemo, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
@@ -129,6 +130,21 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening, mousePosit
     const mouseZ = Math.sqrt(Math.max(0, mouseInfluenceRadius**2 - mouseX**2 - mouseY**2));
     const mouse3D = new THREE.Vector3(mouseX * mouseInfluenceRadius, mouseY * mouseInfluenceRadius, -mouseZ);
     
+    // NEW: Prepare array to store temporary particle positions for repulsion calculation
+    const tempPositions: THREE.Vector3[] = [];
+    for (let i = 0; i < particles.count; i++) {
+      const i3 = i * 3;
+      tempPositions.push(new THREE.Vector3(
+        positions[i3], 
+        positions[i3 + 1], 
+        positions[i3 + 2]
+      ));
+    }
+    
+    // NEW: Repulsion strength parameters
+    const minDistance = isMobile ? 0.7 : 0.9; // Minimum distance between particles before repulsion
+    const repulsionStrength = isMobile ? 0.02 : 0.025; // How strongly particles repel each other
+    
     for (let i = 0; i < particles.count; i++) {
       const i3 = i * 3;
       
@@ -231,15 +247,49 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening, mousePosit
       const gravitationalY = toCenterDirection.y * gravitationalPull;
       const gravitationalZ = toCenterDirection.z * gravitationalPull;
       
+      // NEW: Add repulsion from other particles
+      // This prevents particles from clumping too closely together
+      let repulsionX = 0;
+      let repulsionY = 0;
+      let repulsionZ = 0;
+      
+      // Optimize by only checking nearby particles (not all particles)
+      // Check a sample of particles to improve performance
+      const sampleSize = Math.min(particles.count, isMobile ? 20 : 30);
+      for (let j = 0; j < sampleSize; j++) {
+        // Get random particle index (not the current one)
+        const randomIndex = Math.floor(Math.random() * particles.count);
+        if (randomIndex === i) continue;
+        
+        const otherParticle = tempPositions[randomIndex];
+        const distToParticle = particlePosition.distanceTo(otherParticle);
+        
+        // Only repel if particles are too close
+        if (distToParticle < minDistance) {
+          // Direction from other particle to this one
+          const repulsionDir = new THREE.Vector3();
+          repulsionDir.subVectors(particlePosition, otherParticle).normalize();
+          
+          // Repulsion strength increases as particles get closer
+          const repulsionFactor = (minDistance - distToParticle) / minDistance;
+          
+          // Apply repulsion force
+          repulsionX += repulsionDir.x * repulsionFactor * repulsionStrength;
+          repulsionY += repulsionDir.y * repulsionFactor * repulsionStrength;
+          repulsionZ += repulsionDir.z * repulsionFactor * repulsionStrength;
+        }
+      }
+      
       // Calculate new position with all effects combined
       // Apply effects relative to the cluster center
       const offsetX = particlePosition.x - clusterCenter.x;
       const offsetY = particlePosition.y - clusterCenter.y;
       const offsetZ = particlePosition.z - clusterCenter.z;
       
-      let newX = clusterCenter.x + offsetX * expansionFactor + waveX + orbitX * (1 + audioDisplacement) + mouseAttractionX + gravitationalX;
-      let newY = clusterCenter.y + offsetY * expansionFactor + waveY + orbitY * (1 + audioDisplacement) + mouseAttractionY + gravitationalY;
-      let newZ = clusterCenter.z + offsetZ * expansionFactor + waveZ + orbitZ * (1 + audioDisplacement) + mouseAttractionZ + gravitationalZ;
+      // NEW: Add repulsion forces to the position calculation
+      let newX = clusterCenter.x + offsetX * expansionFactor + waveX + orbitX * (1 + audioDisplacement) + mouseAttractionX + gravitationalX + repulsionX;
+      let newY = clusterCenter.y + offsetY * expansionFactor + waveY + orbitY * (1 + audioDisplacement) + mouseAttractionY + gravitationalY + repulsionY;
+      let newZ = clusterCenter.z + offsetZ * expansionFactor + waveZ + orbitZ * (1 + audioDisplacement) + mouseAttractionZ + gravitationalZ + repulsionZ;
       
       // Create new position vector to check distance from cluster center
       const newPosition = new THREE.Vector3(newX, newY, newZ);
@@ -316,3 +366,4 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening, mousePosit
 };
 
 export default ParticleSystem;
+
