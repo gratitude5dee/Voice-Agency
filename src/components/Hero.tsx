@@ -1,5 +1,5 @@
 
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Sparkles } from 'lucide-react';
 import ThreeWaveform from './ThreeWaveform';
 import VoiceAgent from './VoiceAgent';
@@ -7,56 +7,6 @@ import VoiceAgent from './VoiceAgent';
 const Hero = () => {
   const starsContainerRef = useRef<HTMLDivElement>(null);
   const [isActive, setIsActive] = useState(false);
-  
-  useEffect(() => {
-    if (!starsContainerRef.current) return;
-    
-    const container = starsContainerRef.current;
-    const containerWidth = window.innerWidth;
-    const containerHeight = window.innerHeight;
-    
-    for (let i = 0; i < 100; i++) {
-      const star = document.createElement('div');
-      const size = Math.random() * 3;
-      
-      star.classList.add('star');
-      star.style.width = `${size}px`;
-      star.style.height = `${size}px`;
-      star.style.left = `${Math.random() * containerWidth}px`;
-      star.style.top = `${Math.random() * containerHeight}px`;
-      star.style.animationDelay = `${Math.random() * 5}s`;
-      
-      const opacity = Math.random() * 0.8 + 0.2;
-      star.style.opacity = opacity.toString();
-      
-      container.appendChild(star);
-    }
-    
-    for (let i = 0; i < 6; i++) {
-      const constellation = document.createElement('div');
-      constellation.classList.add('constellation');
-      
-      const width = Math.random() * 150 + 50;
-      const height = Math.random() * 1 + 0.5;
-      const top = Math.random() * containerHeight;
-      const left = Math.random() * containerWidth;
-      const rotation = Math.random() * 180;
-      
-      constellation.style.width = `${width}px`;
-      constellation.style.height = `${height}px`;
-      constellation.style.top = `${top}px`;
-      constellation.style.left = `${left}px`;
-      constellation.style.setProperty('--rotation', `${rotation}deg`);
-      
-      container.appendChild(constellation);
-    }
-    
-    return () => {
-      while (container.firstChild) {
-        container.removeChild(container.firstChild);
-      }
-    };
-  }, []);
   
   const toggleAssistant = () => {
     setIsActive(prev => !prev);
@@ -95,16 +45,21 @@ const Hero = () => {
           </div>
           
           <div className="w-full lg:w-1/2 mt-12 lg:mt-0 flex flex-col justify-center items-center animate-fade-in [animation-delay:800ms]">
-            {isActive && (
-              <div className="w-full max-w-md mb-8 glass-card rounded-2xl p-4 border border-galaxy-accent/30 shadow-[0_0_30px_rgba(155,135,245,0.2)]">
+            <div className={`w-full max-w-md glass-card rounded-2xl p-4 border ${isActive ? 'border-galaxy-accent/30 shadow-[0_0_30px_rgba(155,135,245,0.2)]' : 'border-galaxy-accent/10'} transition-all duration-300`}>
+              {isActive && (
                 <h3 className="text-lg font-medium mb-2 text-center">Awaken Ambience Voice Interaction</h3>
-                <div className="space-y-6">
-                  <ThreeWaveform isListening={isActive} />
-                </div>
+              )}
+              <div className="space-y-6">
+                <ThreeWaveform isListening={isActive} />
               </div>
-            )}
+            </div>
           </div>
         </div>
+      </div>
+      
+      {/* Background 3D scene */}
+      <div className="fixed inset-0 -z-10">
+        <ThreeWaveform isListening={false} />
       </div>
     </section>
   );

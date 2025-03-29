@@ -41,7 +41,8 @@ const AudioAnalyzer = ({ isListening }: { isListening: boolean }) => {
           const updateData = () => {
             if (analyserRef.current) {
               analyserRef.current.getByteFrequencyData(dataArray);
-              setAudioData([...dataArray]);
+              // Convert the Uint8Array to a new Uint8Array to avoid the type error
+              setAudioData(new Uint8Array(Array.from(dataArray)));
               requestRef.current = requestAnimationFrame(updateData);
             }
           };
@@ -99,7 +100,10 @@ const AudioAnalyzer = ({ isListening }: { isListening: boolean }) => {
     for (let i = 0; i < length; i++) {
       const bar = bars[i] as THREE.Mesh;
       if (bar.scale) {
-        const targetHeight = Math.max(0.05, (audioData[i] || 0) / 255 * 3);
+        const targetHeight = isListening 
+          ? Math.max(0.05, (audioData[i] || 0) / 255 * 3)
+          : Math.max(0.05, Math.sin((Date.now() / 1000 + i * 0.1) % Math.PI) * 0.5 + 0.5);
+        
         bar.scale.y = THREE.MathUtils.lerp(bar.scale.y, targetHeight, 0.2);
       }
     }
