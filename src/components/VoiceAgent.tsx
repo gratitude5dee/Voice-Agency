@@ -1,9 +1,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { useConversation } from '@11labs/react';
-import { Button } from './ui/button';
 import { Mic, MicOff, Zap } from 'lucide-react';
 import { toast } from 'sonner';
+import { RainbowButton } from './ui/rainbow-button';
 
 interface VoiceAgentProps {
   isOpen: boolean;
@@ -62,27 +62,23 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ isOpen, onToggle, isListening }
   }, [isOpen, agentId, conversation, onToggle]);
 
   return (
-    <Button 
-      onClick={onToggle}
-      size="lg"
-      className={`flex items-center space-x-2 px-8 py-6 text-base font-medium shadow-lg transition-all duration-300 ${
-        isOpen 
-          ? 'bg-red-500 hover:bg-red-600' 
-          : 'bg-galaxy-accent hover:bg-galaxy-accent/90'
-      } rounded-full`}
-    >
-      {isOpen ? (
-        <>
-          <MicOff size={20} />
-          <span>Stop Assistant</span>
-        </>
-      ) : (
-        <>
-          <Zap size={20} className="animate-pulse" />
-          <span>Activate Voice AI</span>
-        </>
-      )}
-    </Button>
+    isOpen ? (
+      <RainbowButton 
+        onClick={onToggle}
+        className="flex items-center space-x-2 px-8 py-6 text-white"
+      >
+        <MicOff size={20} className="mr-2" />
+        <span>Stop Assistant</span>
+      </RainbowButton>
+    ) : (
+      <RainbowButton 
+        onClick={onToggle}
+        className="flex items-center space-x-2 px-8 py-6 text-white"
+      >
+        <Zap size={20} className="mr-2 animate-pulse" />
+        <span>Activate Voice AI</span>
+      </RainbowButton>
+    )
   );
 };
 
