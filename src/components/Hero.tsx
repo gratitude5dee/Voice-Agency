@@ -1,6 +1,6 @@
 
 import { useRef, useState } from 'react';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Zap } from 'lucide-react';
 import ThreeWaveform from './ThreeWaveform';
 import VoiceAgent from './VoiceAgent';
 
@@ -30,15 +30,15 @@ const Hero = () => {
           <div className="w-full lg:w-1/2 text-center lg:text-left">
             <div className="inline-flex items-center px-3 py-1 mb-6 rounded-full bg-galaxy-purple/30 border border-galaxy-accent/20 animate-fade-in">
               <Sparkles size={16} className="text-galaxy-accent mr-2" />
-              <span className="text-sm font-medium">Live voice assistant</span>
+              <span className="text-sm font-medium">Voice AI</span>
             </div>
             
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 animate-fade-in [animation-delay:200ms]">
-              You're Live Now With <span className="text-galaxy-accent">Awaken Ambience</span> Voice Assistant
+              <span className="text-galaxy-accent">Awaken Ambience</span>
             </h1>
             
-            <p className="text-lg text-gray-300 mb-8 max-w-xl mx-auto lg:mx-0 animate-fade-in [animation-delay:400ms]">
-              Experience real-time voice interaction with ElevenLabs AI. This demo shows how our assistant processes audio input and responds naturally to your voice.
+            <p className="text-xl text-gray-300 mb-8 max-w-xl mx-auto lg:mx-0 animate-fade-in [animation-delay:400ms]">
+              Talk to the future. Real-time voice AI that responds naturally.
             </p>
             
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start animate-fade-in [animation-delay:600ms] relative z-20">

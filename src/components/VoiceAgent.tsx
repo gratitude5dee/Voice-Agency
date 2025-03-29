@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useConversation } from '@11labs/react';
 import { Button } from './ui/button';
-import { Mic, MicOff } from 'lucide-react';
+import { Mic, MicOff, Zap } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface VoiceAgentProps {
@@ -65,11 +65,11 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ isOpen, onToggle, isListening }
     <Button 
       onClick={onToggle}
       size="lg"
-      className={`primary-button flex items-center space-x-2 px-8 py-6 text-base font-medium shadow-lg ${
+      className={`flex items-center space-x-2 px-8 py-6 text-base font-medium shadow-lg transition-all duration-300 ${
         isOpen 
           ? 'bg-red-500 hover:bg-red-600' 
           : 'bg-galaxy-accent hover:bg-galaxy-accent/90'
-      }`}
+      } rounded-full`}
     >
       {isOpen ? (
         <>
@@ -78,8 +78,8 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ isOpen, onToggle, isListening }
         </>
       ) : (
         <>
-          <Mic size={20} />
-          <span>Start Assistant</span>
+          <Zap size={20} className="animate-pulse" />
+          <span>Activate Voice AI</span>
         </>
       )}
     </Button>
