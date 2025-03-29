@@ -40,6 +40,7 @@ const ThreeWaveform: React.FC<ThreeWaveformProps> = ({ isListening }) => {
     };
   }, []);
   
+  // Adjust camera position to view the single cluster properly
   const cameraPosition: [number, number, number] = isMobile ? [0, 2, 12] : [0, 2, 16];
   const fov = isMobile ? 70 : 60;
   

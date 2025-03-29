@@ -54,31 +54,31 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening, mousePosit
     const colors = new Float32Array(count * 3);
     const sizes = new Float32Array(count);
     
-    // Initialize particles with wider distribution and random orbital shells
-    const maxRadius = isMobile ? 16 : 20; // Doubled from 8/10 to 16/20 to place particles much further back
+    // Define a single cluster radius
+    const clusterRadius = isMobile ? 6 : 8;
+    // Center position for the cluster
+    const centerZ = -20; // Keep the cluster far from camera
     
     for (let i = 0; i < count; i++) {
-      // Create multiple orbital shells with various radiuses
-      // Use pow distribution to create more interesting patterns
-      const shellFactor = Math.random();
-      const radius = maxRadius * Math.pow(shellFactor, 0.4); // More particles toward edges
+      // Create a single concentrated cluster of particles
+      // Gaussian-like distribution around center
+      const radius = clusterRadius * Math.pow(Math.random(), 0.5);
       
-      // Add slight randomness to initial positions for more organic feel
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos(2 * Math.random() - 1);
       
       const x = radius * Math.sin(phi) * Math.cos(theta);
       const y = radius * Math.sin(phi) * Math.sin(theta);
-      const z = radius * Math.cos(phi) - 16; // Push particles twice as far back (from -8 to -16)
+      const z = radius * Math.cos(phi) + centerZ; // Center the cluster at centerZ
       
       positions[i * 3] = x;
       positions[i * 3 + 1] = y;
       positions[i * 3 + 2] = z;
       
-      // Darker colors with more subtle tones
-      const hue = 0.6 + Math.random() * 0.3; 
-      const sat = 0.5 + Math.random() * 0.3; // Less saturation
-      const light = 0.2 + Math.random() * 0.3; // Darker overall
+      // Consistent color palette for the cluster
+      const hue = 0.6 + Math.random() * 0.2; 
+      const sat = 0.5 + Math.random() * 0.3;
+      const light = 0.2 + Math.random() * 0.3;
       
       // Create the color object from HSL values
       const color = new THREE.Color().setHSL(hue, sat, light);
@@ -107,8 +107,10 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening, mousePosit
     const baseScale = isMobile ? 0.95 : 1.05;
     const scale = isListening ? baseScale * 1.1 : baseScale;
     
-    // Maximum allowed distance from center to keep particles in view
-    const maxAllowedDistance = isMobile ? 24 : 30; // Doubled from 12/15 to 24/30
+    // Maximum allowed distance from cluster center
+    const maxAllowedDistance = isMobile ? 12 : 16; 
+    const clusterCenterZ = -20; // Match the center Z from initialization
+    const clusterCenter = new THREE.Vector3(0, 0, clusterCenterZ);
     
     // Get average audio intensity for global effects
     let globalAudioIntensity = 0;
@@ -123,21 +125,22 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening, mousePosit
     const [mouseX, mouseY] = mousePosition;
     
     // Calculate 3D position from 2D mouse (project onto a sphere)
-    const mouseInfluenceRadius = 12; // Doubled from 6 to 12 to match larger space
+    const mouseInfluenceRadius = 12;
     const mouseZ = Math.sqrt(Math.max(0, mouseInfluenceRadius**2 - mouseX**2 - mouseY**2));
     const mouse3D = new THREE.Vector3(mouseX * mouseInfluenceRadius, mouseY * mouseInfluenceRadius, -mouseZ);
     
     for (let i = 0; i < particles.count; i++) {
       const i3 = i * 3;
       
-      // Get original position
-      const x = particles.positions[i3];
-      const y = particles.positions[i3 + 1];
-      const z = particles.positions[i3 + 2];
+      // Get current position
+      const x = positions[i3];
+      const y = positions[i3 + 1];
+      const z = positions[i3 + 2];
+      const particlePosition = new THREE.Vector3(x, y, z);
       
-      // Calculate normalized distance from center
-      const distance = Math.sqrt(x*x + y*y + z*z);
-      const normalizedDist = distance / maxAllowedDistance;
+      // Calculate distance from cluster center instead of origin
+      const distanceFromCenter = particlePosition.distanceTo(clusterCenter);
+      const normalizedDist = distanceFromCenter / maxAllowedDistance;
       
       // Audio reactivity per particle
       let audioIntensity = 0;
@@ -176,21 +179,20 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening, mousePosit
       colors[i3 + 1] = color.g;
       colors[i3 + 2] = color.b;
       
-      // More diverse movement patterns
-      // Use unique orbital paths that vary with audio
+      // More cohesive movement patterns for a single cluster
+      // Use more contained orbital paths that keep the cluster together
       const orbitSpeed = 0.1 + (i % 5) * 0.01 + (audioIntensity * 0.3);
-      const orbitRadius = distance * (1 + (audioIntensity * 0.5));
       const orbitPhase = (time * orbitSpeed) + (i * 0.01);
       
-      // Create orbital motion around the particle's basic path
-      const orbitX = Math.sin(orbitPhase * 1.1) * 0.3;
-      const orbitY = Math.cos(orbitPhase * 0.9) * 0.3;
-      const orbitZ = Math.sin(orbitPhase * 1.3) * 0.3;
+      // Create smaller orbital motion around the particle's basic path
+      const orbitX = Math.sin(orbitPhase * 1.1) * 0.2;
+      const orbitY = Math.cos(orbitPhase * 0.9) * 0.2;
+      const orbitZ = Math.sin(orbitPhase * 1.3) * 0.2;
       
       // Wave effects that propagate through the entire field
-      const waveX = Math.sin(time * 0.7 + y * 0.5) * 0.3;
-      const waveY = Math.cos(time * 0.8 + z * 0.5) * 0.3;
-      const waveZ = Math.sin(time * 0.9 + x * 0.5) * 0.3;
+      const waveX = Math.sin(time * 0.7 + y * 0.5) * 0.2;
+      const waveY = Math.cos(time * 0.8 + z * 0.5) * 0.2;
+      const waveZ = Math.sin(time * 0.9 + x * 0.5) * 0.2;
       
       // Breathing effect - slower and more natural
       const breathe = (Math.sin(time * 0.4) * 0.2 + 0.9);
@@ -204,7 +206,6 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening, mousePosit
       
       // Create mouse attraction/repulsion effect
       // Influence decreases with distance from mouse
-      const particlePosition = new THREE.Vector3(x, y, z);
       const distToMouse = particlePosition.distanceTo(mouse3D);
       
       // Mouse influence decreases with distance
@@ -220,28 +221,37 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening, mousePosit
       const mouseAttractionY = mouseDirection.y * mouseAttraction * mouseStrength;
       const mouseAttractionZ = mouseDirection.z * mouseAttraction * mouseStrength * 0.5; // Less Z influence
       
+      // Direction vector from particle to cluster center
+      const toCenterDirection = new THREE.Vector3();
+      toCenterDirection.subVectors(clusterCenter, particlePosition).normalize();
+      
+      // Gravitational pull to cluster center - stronger as particles get further away
+      const gravitationalPull = Math.pow(normalizedDist, 2) * 0.05;
+      const gravitationalX = toCenterDirection.x * gravitationalPull;
+      const gravitationalY = toCenterDirection.y * gravitationalPull;
+      const gravitationalZ = toCenterDirection.z * gravitationalPull;
+      
       // Calculate new position with all effects combined
-      let newX = x * expansionFactor + waveX + orbitX * (1 + audioDisplacement) + mouseAttractionX;
-      let newY = y * expansionFactor + waveY + orbitY * (1 + audioDisplacement) + mouseAttractionY;
-      let newZ = z * expansionFactor + waveZ + orbitZ * (1 + audioDisplacement) + mouseAttractionZ;
+      // Apply effects relative to the cluster center
+      const offsetX = particlePosition.x - clusterCenter.x;
+      const offsetY = particlePosition.y - clusterCenter.y;
+      const offsetZ = particlePosition.z - clusterCenter.z;
       
-      // Apply a slight repulsion force to prevent particles clumping
-      const centerDist = Math.sqrt(newX*newX + newY*newY + newZ*newZ);
-      if (centerDist < 1.8) { // If too close to center
-        const repulsionFactor = 1.8 / Math.max(0.1, centerDist);
-        newX *= repulsionFactor;
-        newY *= repulsionFactor;
-        newZ *= repulsionFactor;
-      }
+      let newX = clusterCenter.x + offsetX * expansionFactor + waveX + orbitX * (1 + audioDisplacement) + mouseAttractionX + gravitationalX;
+      let newY = clusterCenter.y + offsetY * expansionFactor + waveY + orbitY * (1 + audioDisplacement) + mouseAttractionY + gravitationalY;
+      let newZ = clusterCenter.z + offsetZ * expansionFactor + waveZ + orbitZ * (1 + audioDisplacement) + mouseAttractionZ + gravitationalZ;
       
-      // Check if the new position exceeds the maximum allowed distance
-      const newDistance = Math.sqrt(newX*newX + newY*newY + newZ*newZ);
-      if (newDistance > maxAllowedDistance) {
-        // Scale back the position to the maximum allowed distance
-        const scaleFactor = maxAllowedDistance / newDistance;
-        newX *= scaleFactor;
-        newY *= scaleFactor;
-        newZ *= scaleFactor;
+      // Create new position vector to check distance from cluster center
+      const newPosition = new THREE.Vector3(newX, newY, newZ);
+      const newDistanceFromCenter = newPosition.distanceTo(clusterCenter);
+      
+      // Check if the new position exceeds the maximum allowed distance from cluster center
+      if (newDistanceFromCenter > maxAllowedDistance) {
+        // Scale back the position to the maximum allowed distance from cluster center
+        const scaleFactor = maxAllowedDistance / newDistanceFromCenter;
+        newX = clusterCenter.x + (newX - clusterCenter.x) * scaleFactor;
+        newY = clusterCenter.y + (newY - clusterCenter.y) * scaleFactor;
+        newZ = clusterCenter.z + (newZ - clusterCenter.z) * scaleFactor;
       }
       
       // Update position
