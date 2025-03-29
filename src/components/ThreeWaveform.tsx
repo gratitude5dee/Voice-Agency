@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
@@ -39,7 +40,7 @@ const ThreeWaveform: React.FC<ThreeWaveformProps> = ({ isListening }) => {
     };
   }, []);
   
-  const cameraPosition: [number, number, number] = isMobile ? [0, 2, 6] : [0, 2, 8];
+  const cameraPosition: [number, number, number] = isMobile ? [0, 2, 12] : [0, 2, 16];
   const fov = isMobile ? 70 : 60;
   
   return (
@@ -59,7 +60,7 @@ const ThreeWaveform: React.FC<ThreeWaveformProps> = ({ isListening }) => {
           minPolarAngle={Math.PI / 3} 
         />
         <gridHelper 
-          args={[isMobile ? 30 : 40]} 
+          args={[isMobile ? 60 : 80]} 
           position={[0, -2, 0]} 
           rotation={[0, 0, 0]}
           material={new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.15 })}

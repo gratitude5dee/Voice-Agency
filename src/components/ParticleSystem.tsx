@@ -55,7 +55,7 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening, mousePosit
     const sizes = new Float32Array(count);
     
     // Initialize particles with wider distribution and random orbital shells
-    const maxRadius = isMobile ? 8 : 10; // Increased from 6/8 to 8/10 to place particles further back
+    const maxRadius = isMobile ? 16 : 20; // Doubled from 8/10 to 16/20 to place particles much further back
     
     for (let i = 0; i < count; i++) {
       // Create multiple orbital shells with various radiuses
@@ -69,7 +69,7 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening, mousePosit
       
       const x = radius * Math.sin(phi) * Math.cos(theta);
       const y = radius * Math.sin(phi) * Math.sin(theta);
-      const z = radius * Math.cos(phi) - 8; // Push particles further back (from -5 to -8)
+      const z = radius * Math.cos(phi) - 16; // Push particles twice as far back (from -8 to -16)
       
       positions[i * 3] = x;
       positions[i * 3 + 1] = y;
@@ -108,7 +108,7 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening, mousePosit
     const scale = isListening ? baseScale * 1.1 : baseScale;
     
     // Maximum allowed distance from center to keep particles in view
-    const maxAllowedDistance = isMobile ? 12 : 15; // Increased from 7/9 to 12/15
+    const maxAllowedDistance = isMobile ? 24 : 30; // Doubled from 12/15 to 24/30
     
     // Get average audio intensity for global effects
     let globalAudioIntensity = 0;
@@ -123,7 +123,7 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening, mousePosit
     const [mouseX, mouseY] = mousePosition;
     
     // Calculate 3D position from 2D mouse (project onto a sphere)
-    const mouseInfluenceRadius = 6; // Increased from 4 to 6 to match larger space
+    const mouseInfluenceRadius = 12; // Doubled from 6 to 12 to match larger space
     const mouseZ = Math.sqrt(Math.max(0, mouseInfluenceRadius**2 - mouseX**2 - mouseY**2));
     const mouse3D = new THREE.Vector3(mouseX * mouseInfluenceRadius, mouseY * mouseInfluenceRadius, -mouseZ);
     
