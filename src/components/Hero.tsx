@@ -1,7 +1,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Sparkles } from 'lucide-react';
-import AudioWaveform from './AudioWaveform';
+import ThreeWaveform from './ThreeWaveform';
 import VoiceAgent from './VoiceAgent';
 
 const Hero = () => {
@@ -85,7 +85,7 @@ const Hero = () => {
               Experience real-time voice interaction with ElevenLabs AI. This demo shows how our assistant processes audio input and responds naturally to your voice.
             </p>
             
-            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start space-y-4 sm:space-y-0 animate-fade-in [animation-delay:600ms] relative z-20">
+            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start animate-fade-in [animation-delay:600ms] relative z-20">
               <VoiceAgent 
                 isOpen={isActive} 
                 onToggle={toggleAssistant}
@@ -99,25 +99,10 @@ const Hero = () => {
               <div className="w-full max-w-md mb-8 glass-card rounded-2xl p-4 border border-galaxy-accent/30 shadow-[0_0_30px_rgba(155,135,245,0.2)]">
                 <h3 className="text-lg font-medium mb-2 text-center">Awaken Ambience Voice Interaction</h3>
                 <div className="space-y-6">
-                  <AudioWaveform isListening={isActive} onToggle={toggleAssistant} />
+                  <ThreeWaveform isListening={isActive} />
                 </div>
               </div>
             )}
-            
-            <div className="relative w-64 h-64 mx-auto rounded-full glass-card border border-galaxy-accent/30 p-2 shadow-[0_0_50px_rgba(155,135,245,0.3)] animate-float">
-              <div className="w-full h-full rounded-full bg-gradient-to-br from-galaxy-purple to-galaxy-dark flex items-center justify-center overflow-hidden">
-                <div className="relative w-24 h-24 rounded-full bg-galaxy-accent/20 flex items-center justify-center">
-                  <div className="absolute w-full h-full rounded-full bg-galaxy-accent/20 animate-pulse-slow"></div>
-                  <div className="absolute w-full h-full rounded-full bg-galaxy-accent/10 animate-pulse-slow [animation-delay:1s]"></div>
-                  <div className="z-10 w-14 h-14 rounded-full bg-galaxy-accent flex items-center justify-center shadow-lg">
-                    <Sparkles className="w-7 h-7 text-white" />
-                  </div>
-                </div>
-                
-                <div className="absolute w-full h-full rounded-full border border-galaxy-accent/20 opacity-0 animate-ping [animation-duration:3s]"></div>
-                <div className="absolute w-full h-full rounded-full border border-galaxy-accent/20 opacity-0 animate-ping [animation-duration:3s] [animation-delay:1s]"></div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
