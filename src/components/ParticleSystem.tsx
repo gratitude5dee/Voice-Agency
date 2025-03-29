@@ -25,9 +25,8 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening }) => {
     const maxRadius = isMobile ? 3.5 : 4.5; // Slightly larger radius for better spread
     
     for (let i = 0; i < count; i++) {
-      // Distributed along spherical shells for better circle-like patterns
-      const shellIndex = Math.floor(Math.random() * 3); // Create 3 shells
-      const radius = (maxRadius * 0.7) + (shellIndex * 0.8); // Multiple shells with different radii
+      // Improved distribution in a sphere to avoid clumping
+      const radius = maxRadius * Math.pow(Math.random(), 0.6); // More particles toward edges
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos(2 * Math.random() - 1);
       
@@ -53,12 +52,7 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening }) => {
     return { positions, colors, sizes, count };
   });
   
-  // Store original positions for circular path calculation
-  const originalPositions = useMemo(() => {
-    return new Float32Array(particles.positions);
-  }, [particles.positions]);
-  
-  // Update particles animation with circular path movement
+  // Update particles animation with better distribution
   useFrame(({ clock }) => {
     if (!particlesRef.current) return;
     
@@ -67,86 +61,84 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening }) => {
     const sizes = particlesRef.current.geometry.attributes.size.array as Float32Array;
     const colors = particlesRef.current.geometry.attributes.color.array as Float32Array;
     
+    // Use a smaller scale for more contained animations
+    const baseScale = isMobile ? 0.95 : 1.05;
+    const scale = isListening ? baseScale * 1.1 : baseScale;
+    
     // Maximum allowed distance from center to keep particles in view
-    const maxAllowedDistance = isMobile ? 4 : 5;
+    const maxAllowedDistance = isMobile ? 4.5 : 5.5;
     
     for (let i = 0; i < particles.count; i++) {
       const i3 = i * 3;
       
-      // Get original position as the base for the circular path
-      const origX = originalPositions[i3];
-      const origY = originalPositions[i3 + 1];
-      const origZ = originalPositions[i3 + 2];
+      // Get original position
+      const x = particles.positions[i3];
+      const y = particles.positions[i3 + 1];
+      const z = particles.positions[i3 + 2];
       
-      // Calculate original distance from center for normalization
-      const origDistance = Math.sqrt(origX*origX + origY*origY + origZ*origZ);
+      // Calculate normalized distance from center
+      const distance = Math.sqrt(x*x + y*y + z*z);
+      const normalizedDist = distance / maxAllowedDistance;
       
       // Audio reactivity - more controlled
       let audioIntensity = 0;
       if (isListening && audioData && i < audioData.length) {
         const audioIndex = Math.floor(i % audioData.length);
-        audioIntensity = Math.min(audioData[audioIndex] / 255, 0.7); // Cap intensity
+        // Cap the audio intensity to prevent extreme expansion
+        audioIntensity = Math.min(audioData[audioIndex] / 255, 0.8);
       }
       
-      // Create circular path motion
-      // Use original position to create a rotation around its circular path
-      const rotationSpeed = 0.3 + (i % 5) * 0.02; // Varied speeds for different particles
-      const rotationAmount = time * rotationSpeed;
+      // Gentler wave effect with better spread
+      const waveX = Math.sin(time * 0.7 + x) * 0.2;
+      const waveY = Math.cos(time * 0.8 + y) * 0.2;
+      const waveZ = Math.sin(time * 0.9 + z) * 0.2;
       
-      // Apply rotation to maintain circular path
-      const cosR = Math.cos(rotationAmount);
-      const sinR = Math.sin(rotationAmount);
+      // Slower breathing effect for stability
+      const breathe = (Math.sin(time * 0.5) * 0.3 + 0.5) * 0.3 + 0.7;
       
-      // Rotate around Y axis to maintain circular path in XZ plane
-      let newX = origX * cosR + origZ * sinR;
-      let newZ = -origX * sinR + origZ * cosR;
-      let newY = origY;
+      // More contained audio-reactive displacement
+      const audioDisplacement = isListening ? (audioIntensity * 0.9) : 0;
       
-      // Add gentle wave effect for Y dimension
-      const waveFrequency = 1.5 + (i % 7) * 0.1;
-      const waveY = Math.sin(time * waveFrequency + i * 0.05) * (0.2 + audioIntensity * 0.3);
-      newY += waveY;
+      // Apply all effects with constraints
+      const finalScale = scale * breathe * (1 + audioDisplacement * 0.3);
       
-      // If listening, add a small audio-reactive pulse that follows the circular path
-      if (isListening) {
-        const pulseAmount = 0.3 * audioIntensity;
-        // Scale outward but keep the circular path
-        const normalizedX = newX / origDistance;
-        const normalizedY = newY / origDistance;
-        const normalizedZ = newZ / origDistance;
-        
-        // Apply the pulse along the circular path
-        newX += normalizedX * pulseAmount;
-        newY += normalizedY * pulseAmount;
-        newZ += normalizedZ * pulseAmount;
+      // Calculate new position - with repulsion force to prevent collapse
+      let newX = x * finalScale + waveX * (1 + audioDisplacement * 0.5);
+      let newY = y * finalScale + waveY * (1 + audioDisplacement * 0.5);
+      let newZ = z * finalScale + waveZ * (1 + audioDisplacement * 0.5);
+      
+      // Apply a slight repulsion force from center to prevent collapse
+      const centerDist = Math.sqrt(newX*newX + newY*newY + newZ*newZ);
+      if (centerDist < 1.5) { // If too close to center
+        const repulsionFactor = 1.5 / Math.max(0.1, centerDist);
+        newX *= repulsionFactor;
+        newY *= repulsionFactor;
+        newZ *= repulsionFactor;
       }
       
-      // Ensure the particles don't exceed the maximum allowed distance
+      // Check if the new position exceeds the maximum allowed distance
       const newDistance = Math.sqrt(newX*newX + newY*newY + newZ*newZ);
       if (newDistance > maxAllowedDistance) {
+        // Scale back the position to the maximum allowed distance
         const scaleFactor = maxAllowedDistance / newDistance;
         newX *= scaleFactor;
         newY *= scaleFactor;
         newZ *= scaleFactor;
       }
       
-      // Update position
+      // Update position with contained boundaries
       positions[i3] = newX;
       positions[i3 + 1] = newY;
       positions[i3 + 2] = newZ;
       
-      // Update size based on audio intensity
+      // Update size based on audio - more constrained
       const baseSize = particles.sizes[i];
-      sizes[i] = baseSize * (1 + audioIntensity * 1.2);
+      sizes[i] = baseSize * (1 + audioIntensity * 1.5);
       
-      // Update color based on audio and position in the circular path
+      // Update color based on audio
       if (isListening && audioIntensity > 0.1) {
-        // Shift color based on audio intensity and position
-        const angle = Math.atan2(newZ, newX); // Get angle in the circular path
-        const normalizedAngle = (angle + Math.PI) / (2 * Math.PI); // Normalize to 0-1
-        
-        // Create color variation based on position in the circle and audio
-        const hue = 0.75 + normalizedAngle * 0.1 + audioIntensity * 0.15;
+        // Shift color based on audio intensity
+        const hue = 0.75 + audioIntensity * 0.2; // Shift from purple toward pink
         const color = new THREE.Color().setHSL(hue, 0.8, 0.6 + audioIntensity * 0.3);
         colors[i3] = color.r;
         colors[i3 + 1] = color.g;
