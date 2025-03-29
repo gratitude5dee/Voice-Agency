@@ -26,32 +26,26 @@ const Hero = () => {
       </div>
       
       <div className="container mx-auto px-6 relative z-10 flex-1 flex items-center justify-center">
-        <div className="flex flex-col lg:flex-row items-center">
-          <div className="w-full lg:w-1/2 text-center">
-            <div className="inline-flex items-center px-3 py-1 mb-6 rounded-full bg-galaxy-purple/30 border border-galaxy-accent/20 animate-fade-in">
-              <Sparkles size={16} className="text-galaxy-accent mr-2" />
-              <span className="text-sm font-medium">Voice AI</span>
-            </div>
-            
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 animate-fade-in [animation-delay:200ms]">
-              <span className="text-galaxy-accent">Awaken Ambience</span>
-            </h1>
-            
-            <p className="text-xl text-gray-300 mb-8 max-w-xl mx-auto animate-fade-in [animation-delay:400ms]">
-              Talk to the future. Real-time voice AI that responds naturally.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row items-center justify-center animate-fade-in [animation-delay:600ms] relative z-20">
-              <VoiceAgent 
-                isOpen={isActive} 
-                onToggle={toggleAssistant}
-                isListening={isActive}
-              />
-            </div>
+        <div className="text-center max-w-3xl mx-auto">
+          <div className="inline-flex items-center px-3 py-1 mb-6 rounded-full bg-galaxy-purple/30 border border-galaxy-accent/20 animate-fade-in">
+            <Sparkles size={16} className="text-galaxy-accent mr-2" />
+            <span className="text-sm font-medium">Voice AI</span>
           </div>
           
-          <div className="w-full lg:w-1/2 mt-12 lg:mt-0 flex justify-center items-center animate-fade-in [animation-delay:800ms]">
-            {/* Purposely left empty - content now displayed in the background */}
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 animate-fade-in [animation-delay:200ms]">
+            <span className="text-galaxy-accent">Awaken Ambience</span>
+          </h1>
+          
+          <p className="text-xl text-gray-300 mb-8 max-w-xl mx-auto animate-fade-in [animation-delay:400ms]">
+            Talk to the future. Real-time voice AI that responds naturally.
+          </p>
+          
+          <div className="flex justify-center animate-fade-in [animation-delay:600ms] relative z-20">
+            <VoiceAgent 
+              isOpen={isActive} 
+              onToggle={toggleAssistant}
+              isListening={isActive}
+            />
           </div>
         </div>
       </div>
