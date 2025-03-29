@@ -1,3 +1,4 @@
+
 import React, { useRef, useMemo, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
@@ -79,6 +80,9 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening, mousePosit
       const hue = 0.6 + Math.random() * 0.3; 
       const sat = 0.5 + Math.random() * 0.3; // Less saturation
       const light = 0.2 + Math.random() * 0.3; // Darker overall
+      
+      // Create the color object from HSL values
+      const color = new THREE.Color().setHSL(hue, sat, light);
       
       colors[i * 3] = color.r;
       colors[i * 3 + 1] = color.g;
