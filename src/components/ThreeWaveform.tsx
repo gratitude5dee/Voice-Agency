@@ -40,9 +40,8 @@ const ThreeWaveform: React.FC<ThreeWaveformProps> = ({ isListening }) => {
     };
   }, []);
   
-  // Adjust camera position to get a better view of the particle cluster with the new repulsion forces
-  // Slightly reduce FOV to reduce perspective distortion
-  const cameraPosition: [number, number, number] = isMobile ? [0, 1, 14] : [0, 1, 18];
+  // Bring camera closer to the waveform
+  const cameraPosition: [number, number, number] = isMobile ? [0, 1, 10] : [0, 1, 12]; // Reduced z value
   const fov = isMobile ? 65 : 55;
   
   return (
@@ -73,4 +72,3 @@ const ThreeWaveform: React.FC<ThreeWaveformProps> = ({ isListening }) => {
 };
 
 export default ThreeWaveform;
-

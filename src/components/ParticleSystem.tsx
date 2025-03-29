@@ -1,4 +1,3 @@
-
 import React, { useRef, useMemo, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
@@ -49,16 +48,16 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening, mousePosit
   
   // Generate particles
   const [particles] = useState(() => {
-    // Reduce particle count
-    const count = isMobile ? 800 : 1500;
+    // Reduce particle count by half
+    const count = isMobile ? 400 : 750; // Reduced from 800/1500 to 400/750
     const positions = new Float32Array(count * 3);
     const colors = new Float32Array(count * 3);
     const sizes = new Float32Array(count);
     
-    // Define a single cluster radius
+    // Define a single cluster radius - bring it closer to camera by reducing centerZ
     const clusterRadius = isMobile ? 6 : 8;
-    // Center position for the cluster
-    const centerZ = -20; // Keep the cluster far from camera
+    // Center position for the cluster - bring closer to camera
+    const centerZ = -15; // Changed from -20 to -15 to bring closer to camera
     
     for (let i = 0; i < count; i++) {
       // Create a single concentrated cluster of particles
@@ -70,7 +69,7 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening, mousePosit
       
       const x = radius * Math.sin(phi) * Math.cos(theta);
       const y = radius * Math.sin(phi) * Math.sin(theta);
-      const z = radius * Math.cos(phi) + centerZ; // Center the cluster at centerZ
+      const z = radius * Math.cos(phi) + centerZ; // Center the cluster at closer centerZ
       
       positions[i * 3] = x;
       positions[i * 3 + 1] = y;
@@ -88,8 +87,8 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening, mousePosit
       colors[i * 3 + 1] = color.g;
       colors[i * 3 + 2] = color.b;
       
-      // More varied sizes with greater variance - REDUCED TO 25% OF ORIGINAL SIZE
-      sizes[i] = Math.random() * (isMobile ? 0.2 : 0.25) + (isMobile ? 0.05 : 0.075);
+      // More varied sizes with greater variance - slightly increase size to compensate for fewer particles
+      sizes[i] = Math.random() * (isMobile ? 0.25 : 0.3) + (isMobile ? 0.08 : 0.1);
     }
     
     return { positions, colors, sizes, count };
@@ -366,4 +365,3 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening, mousePosit
 };
 
 export default ParticleSystem;
-
