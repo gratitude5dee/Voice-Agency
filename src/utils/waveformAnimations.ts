@@ -1,4 +1,3 @@
-
 import * as THREE from 'three';
 
 // Animation utilities for idle state - more contained
@@ -53,9 +52,8 @@ export const animateAudioReactiveBar = (
   const targetHeight = Math.max(0.1, audioIntensity * 10); // More vertical scaling
   bar.scale.y = THREE.MathUtils.lerp(bar.scale.y, targetHeight, 0.5);
   
-  // Limited horizontal movement based on audio intensity
-  const freqIntensity = audioIntensity;
-  const radiusModulation = 2 + freqIntensity * 1.2; // Reduced lateral expansion
+  // Much more contained horizontal movement - keep a tighter circle
+  const radiusModulation = 2 + audioIntensity * 0.8; // Reduced lateral expansion
   const x = Math.sin(angle) * radiusModulation;
   const z = Math.cos(angle) * radiusModulation;
   
@@ -64,21 +62,21 @@ export const animateAudioReactiveBar = (
   bar.position.z = THREE.MathUtils.lerp(bar.position.z, z, 0.15);
   
   // Enhanced vertical bounce based on audio
-  const yOffset = Math.sin(time * 3 + i * 0.3) * 0.5 * freqIntensity;
+  const yOffset = Math.sin(time * 3 + i * 0.3) * 0.5 * audioIntensity;
   bar.position.y = yOffset;
   
   // Update bar material with dramatic color changes based on audio intensity
   if (bar.material) {
     const material = bar.material as THREE.MeshStandardMaterial;
     const hue = (i / length) * 0.5 + time * 0.2;
-    const saturation = 0.5 + freqIntensity * 0.5;
-    const brightness = 0.5 + freqIntensity * 0.5;
+    const saturation = 0.5 + audioIntensity * 0.5;
+    const brightness = 0.5 + audioIntensity * 0.5;
     const color = new THREE.Color().setHSL(hue, saturation, brightness);
     material.color.lerp(color, 0.3);
     material.emissive.lerp(color.multiplyScalar(0.5), 0.3);
     
     // Make bars more shiny based on audio intensity
-    material.metalness = 0.5 + freqIntensity * 0.5;
-    material.roughness = Math.max(0.1, 0.5 - freqIntensity * 0.4);
+    material.metalness = 0.5 + audioIntensity * 0.5;
+    material.roughness = Math.max(0.1, 0.5 - audioIntensity * 0.4);
   }
 };

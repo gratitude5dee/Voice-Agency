@@ -21,12 +21,12 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening }) => {
     const colors = new Float32Array(count * 3);
     const sizes = new Float32Array(count);
     
-    // Initialize particles in a smaller sphere
-    const maxRadius = isMobile ? 3 : 4; // Smaller radius to keep particles in view
+    // Initialize particles in a better distributed sphere
+    const maxRadius = isMobile ? 3.5 : 4.5; // Slightly larger radius for better spread
     
     for (let i = 0; i < count; i++) {
-      // Random position in a sphere with controlled radius
-      const radius = maxRadius * Math.pow(Math.random(), 1/3);
+      // Improved distribution in a sphere to avoid clumping
+      const radius = maxRadius * Math.pow(Math.random(), 0.6); // More particles toward edges
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos(2 * Math.random() - 1);
       
@@ -45,14 +45,14 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening }) => {
       colors[i * 3 + 1] = color.g;
       colors[i * 3 + 2] = color.b;
       
-      // Random sizes - smaller on mobile
+      // Varied sizes - smaller on mobile
       sizes[i] = Math.random() * (isMobile ? 0.4 : 0.5) + (isMobile ? 0.3 : 0.5);
     }
     
     return { positions, colors, sizes, count };
   });
   
-  // Update particles animation with contained boundaries
+  // Update particles animation with better distribution
   useFrame(({ clock }) => {
     if (!particlesRef.current) return;
     
@@ -62,11 +62,11 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening }) => {
     const colors = particlesRef.current.geometry.attributes.color.array as Float32Array;
     
     // Use a smaller scale for more contained animations
-    const baseScale = isMobile ? 0.9 : 1.0;
+    const baseScale = isMobile ? 0.95 : 1.05;
     const scale = isListening ? baseScale * 1.1 : baseScale;
     
     // Maximum allowed distance from center to keep particles in view
-    const maxAllowedDistance = isMobile ? 4 : 5;
+    const maxAllowedDistance = isMobile ? 4.5 : 5.5;
     
     for (let i = 0; i < particles.count; i++) {
       const i3 = i * 3;
@@ -88,24 +88,33 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening }) => {
         audioIntensity = Math.min(audioData[audioIndex] / 255, 0.8);
       }
       
-      // Reduced wave effect amplitude
+      // Gentler wave effect with better spread
       const waveX = Math.sin(time * 0.7 + x) * 0.2;
       const waveY = Math.cos(time * 0.8 + y) * 0.2;
       const waveZ = Math.sin(time * 0.9 + z) * 0.2;
       
-      // Gentler breathing effect
+      // Slower breathing effect for stability
       const breathe = (Math.sin(time * 0.5) * 0.3 + 0.5) * 0.3 + 0.7;
       
       // More contained audio-reactive displacement
-      const audioDisplacement = isListening ? (audioIntensity * 1.2) : 0;
+      const audioDisplacement = isListening ? (audioIntensity * 0.9) : 0;
       
       // Apply all effects with constraints
       const finalScale = scale * breathe * (1 + audioDisplacement * 0.3);
       
-      // Calculate new position
+      // Calculate new position - with repulsion force to prevent collapse
       let newX = x * finalScale + waveX * (1 + audioDisplacement * 0.5);
       let newY = y * finalScale + waveY * (1 + audioDisplacement * 0.5);
       let newZ = z * finalScale + waveZ * (1 + audioDisplacement * 0.5);
+      
+      // Apply a slight repulsion force from center to prevent collapse
+      const centerDist = Math.sqrt(newX*newX + newY*newY + newZ*newZ);
+      if (centerDist < 1.5) { // If too close to center
+        const repulsionFactor = 1.5 / Math.max(0.1, centerDist);
+        newX *= repulsionFactor;
+        newY *= repulsionFactor;
+        newZ *= repulsionFactor;
+      }
       
       // Check if the new position exceeds the maximum allowed distance
       const newDistance = Math.sqrt(newX*newX + newY*newY + newZ*newZ);

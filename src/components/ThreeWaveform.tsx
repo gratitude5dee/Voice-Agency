@@ -15,7 +15,7 @@ const ThreeWaveform: React.FC<ThreeWaveformProps> = ({ isListening }) => {
   const isMobile = useIsMobile();
   
   // Adjust camera position for mobile
-  const cameraPosition = isMobile ? [0, 2, 5] : [0, 2, 6];
+  const cameraPosition: [number, number, number] = isMobile ? [0, 2, 5] : [0, 2, 6];
   const fov = isMobile ? 70 : 60;
   
   return (
