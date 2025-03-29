@@ -2,7 +2,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { animateIdleBar, animateAudioReactiveBar } from '@/utils/waveformAnimations';
 import { useAudioData } from '@/hooks/useAudioData';
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -97,7 +96,7 @@ const AudioAnalyzer: React.FC<AudioAnalyzerProps> = ({ isListening }) => {
     };
   }, [isListening, setAudioData]);
   
-  // Animate the 3D bars based on audio data, with more vertical movement and less lateral expansion
+  // Animate the 3D bars based on audio data with vertical motion
   useFrame(({ clock }) => {
     if (!barsRef.current) return;
     
@@ -108,34 +107,91 @@ const AudioAnalyzer: React.FC<AudioAnalyzerProps> = ({ isListening }) => {
     for (let i = 0; i < length; i++) {
       const bar = bars[i] as THREE.Mesh;
       if (bar.scale) {
-        // Calculate position in the circle to create a wave effect
-        const angle = (i / 64) * Math.PI * 2;
+        // Calculate position along the horizontal line for even spacing
+        const step = (i / (length - 1)) * 2 - 1; // Range from -1 to 1
         
         if (isListening) {
           // Calculate audio intensity (normalized to 0-1 range)
           const audioIntensity = (localAudioData[i] || 0) / 255;
-          animateAudioReactiveBar(bar, i, length, time, angle, audioIntensity);
+          
+          // Vertical scaling based on audio intensity
+          const targetHeight = 0.1 + audioIntensity * 5;
+          bar.scale.y = THREE.MathUtils.lerp(bar.scale.y, targetHeight, 0.3);
+          
+          // Position along a horizontal line with slight curve
+          const xPos = step * (isMobile ? 3 : 5);
+          // Add a wave effect horizontally
+          const waveX = Math.sin(time * 0.5 + i * 0.1) * 0.1;
+          // Set position with slight horizontal wave
+          bar.position.x = xPos + waveX;
+          
+          // Slight variance in z-position for depth
+          const zPos = Math.sin(i * 0.3) * 0.5;
+          bar.position.z = zPos;
+          
+          // Vertical position starts at base point and rises with audio
+          const yOffset = -1 + audioIntensity * 0.5;
+          const waveY = Math.sin(time * 2 + i * 0.2) * 0.1 * audioIntensity;
+          bar.position.y = yOffset + waveY;
+          
+          // Update bar material with color changes based on audio intensity and height
+          if (bar.material) {
+            const material = bar.material as THREE.MeshStandardMaterial;
+            const hue = 0.7 + audioIntensity * 0.3; // Shift from purple toward blue/pink
+            const saturation = 0.5 + audioIntensity * 0.5;
+            const brightness = 0.5 + audioIntensity * 0.5;
+            const color = new THREE.Color().setHSL(hue, saturation, brightness);
+            material.color.lerp(color, 0.3);
+            material.emissive.lerp(color.multiplyScalar(0.5), 0.3);
+            
+            // Make bars more shiny based on audio intensity
+            material.metalness = 0.5 + audioIntensity * 0.5;
+            material.roughness = Math.max(0.1, 0.5 - audioIntensity * 0.4);
+          }
         } else {
-          animateIdleBar(bar, i, length, time, angle);
+          // Idle animation - gentle waves along the base
+          const waveHeight = Math.sin(time * 2 + i * 0.5) * 0.3 + 0.7;
+          bar.scale.y = THREE.MathUtils.lerp(bar.scale.y, waveHeight, 0.1);
+          
+          // Position along a horizontal line
+          const xPos = step * (isMobile ? 3 : 5);
+          bar.position.x = xPos;
+          
+          // Slight variance in z-position for depth
+          const zPos = Math.sin(i * 0.3) * 0.5;
+          bar.position.z = zPos;
+          
+          // Vertical position with gentle wave motion
+          const yOffset = -1;
+          const waveY = Math.sin(time * 1.5 + i * 0.1) * 0.15;
+          bar.position.y = yOffset + waveY;
+          
+          // Update bar material with subtle color changes
+          if (bar.material) {
+            const material = bar.material as THREE.MeshStandardMaterial;
+            const hue = 0.7 + Math.sin(time * 0.2 + i * 0.05) * 0.05;
+            const color = new THREE.Color().setHSL(hue, 0.8, 0.7);
+            material.color.lerp(color, 0.05);
+            material.emissive.lerp(color.multiplyScalar(0.3), 0.05);
+          }
         }
       }
     }
   });
   
-  // Circle diameter - smaller on mobile
-  const circleRadius = isMobile ? 1.5 : 2;
+  // Increased bar count for more detailed visualization
+  const barCount = isMobile ? 40 : 64;
   
   return (
-    <group ref={barsRef} position={[0, -1.5, 0]}>
-      {[...Array(64)].map((_, i) => {
-        const angle = (i / 64) * Math.PI * 2;
-        const radius = circleRadius;
-        const x = Math.sin(angle) * radius;
-        const z = Math.cos(angle) * radius;
+    <group ref={barsRef} position={[0, 0, 0]}>
+      {[...Array(barCount)].map((_, i) => {
+        // Calculate position along a horizontal line
+        const step = (i / (barCount - 1)) * 2 - 1; // Range from -1 to 1
+        const xPos = step * (isMobile ? 3 : 5);
         
         return (
-          <mesh key={i} position={[x, 0, z]}>
-            <boxGeometry args={[isMobile ? 0.12 : 0.15, 0.05, isMobile ? 0.12 : 0.15]} />
+          <mesh key={i} position={[xPos, -1, 0]}>
+            <boxGeometry args={[isMobile ? 0.06 : 0.08, 0.05, isMobile ? 0.06 : 0.08]} />
             <meshStandardMaterial 
               color="#9B87F5" 
               emissive="#3F2D8C"
