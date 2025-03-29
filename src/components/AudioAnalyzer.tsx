@@ -3,6 +3,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { animateIdleBar, animateAudioReactiveBar } from '@/utils/waveformAnimations';
+import { useAudioData } from '@/hooks/useAudioData';
 
 interface AudioAnalyzerProps {
   isListening: boolean;
@@ -10,11 +11,12 @@ interface AudioAnalyzerProps {
 
 const AudioAnalyzer: React.FC<AudioAnalyzerProps> = ({ isListening }) => {
   const barsRef = useRef<THREE.Group>(null);
-  const [audioData, setAudioData] = useState<Uint8Array>(new Uint8Array(128).fill(0));
+  const [localAudioData, setLocalAudioData] = useState<Uint8Array>(new Uint8Array(128).fill(0));
   const analyserRef = useRef<AnalyserNode | null>(null);
   const sourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const requestRef = useRef<number | null>(null);
+  const { setAudioData } = useAudioData();
   
   // Set up audio analyzer
   useEffect(() => {
@@ -35,13 +37,15 @@ const AudioAnalyzer: React.FC<AudioAnalyzerProps> = ({ isListening }) => {
           
           const bufferLength = analyser.frequencyBinCount;
           const dataArray = new Uint8Array(bufferLength);
-          setAudioData(dataArray);
+          setLocalAudioData(dataArray);
           
           const updateData = () => {
             if (analyserRef.current) {
               analyserRef.current.getByteFrequencyData(dataArray);
               // Convert the Uint8Array to a new Uint8Array to avoid the type error
-              setAudioData(new Uint8Array(Array.from(dataArray)));
+              const newDataArray = new Uint8Array(Array.from(dataArray));
+              setLocalAudioData(newDataArray);
+              setAudioData(newDataArray); // Share with particle system
               requestRef.current = requestAnimationFrame(updateData);
             }
           };
@@ -71,7 +75,9 @@ const AudioAnalyzer: React.FC<AudioAnalyzerProps> = ({ isListening }) => {
       }
       
       // Reset audio data to zeros when not listening
-      setAudioData(new Uint8Array(128).fill(0));
+      const emptyData = new Uint8Array(128).fill(0);
+      setLocalAudioData(emptyData);
+      setAudioData(emptyData);
     }
     
     return () => {
@@ -87,14 +93,14 @@ const AudioAnalyzer: React.FC<AudioAnalyzerProps> = ({ isListening }) => {
         streamRef.current.getTracks().forEach(track => track.stop());
       }
     };
-  }, [isListening]);
+  }, [isListening, setAudioData]);
   
   // Animate the 3D bars based on audio data
   useFrame(({ clock }) => {
     if (!barsRef.current) return;
     
     const bars = barsRef.current.children;
-    const length = Math.min(bars.length, audioData.length);
+    const length = Math.min(bars.length, localAudioData.length);
     const time = clock.getElapsedTime();
     
     for (let i = 0; i < length; i++) {
@@ -105,7 +111,7 @@ const AudioAnalyzer: React.FC<AudioAnalyzerProps> = ({ isListening }) => {
         
         if (isListening) {
           // Calculate audio intensity (normalized to 0-1 range)
-          const audioIntensity = (audioData[i] || 0) / 255;
+          const audioIntensity = (localAudioData[i] || 0) / 255;
           animateAudioReactiveBar(bar, i, length, time, angle, audioIntensity);
         } else {
           animateIdleBar(bar, i, length, time, angle);
