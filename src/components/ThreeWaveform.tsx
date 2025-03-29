@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
@@ -15,16 +14,13 @@ const ThreeWaveform: React.FC<ThreeWaveformProps> = ({ isListening }) => {
   const isMobile = useIsMobile();
   const [mousePosition, setMousePosition] = useState<[number, number]>([0, 0]);
   
-  // Track mouse movement
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      // Convert to normalized coordinates (-1 to 1)
       const x = (e.clientX / window.innerWidth) * 2 - 1;
       const y = -(e.clientY / window.innerHeight) * 2 + 1;
       setMousePosition([x, y]);
     };
     
-    // For touch devices
     const handleTouchMove = (e: TouchEvent) => {
       if (e.touches.length > 0) {
         const touch = e.touches[0];
@@ -43,8 +39,7 @@ const ThreeWaveform: React.FC<ThreeWaveformProps> = ({ isListening }) => {
     };
   }, []);
   
-  // Adjust camera position for mobile
-  const cameraPosition: [number, number, number] = isMobile ? [0, 2, 5] : [0, 2, 6];
+  const cameraPosition: [number, number, number] = isMobile ? [0, 2, 6] : [0, 2, 8];
   const fov = isMobile ? 70 : 60;
   
   return (
@@ -54,19 +49,17 @@ const ThreeWaveform: React.FC<ThreeWaveformProps> = ({ isListening }) => {
         <pointLight position={[0, 5, 0]} intensity={1} color="#ffffff" />
         <pointLight position={[5, 0, 5]} intensity={0.8} color="#9B87F5" />
         <AudioAnalyzer isListening={isListening} />
-        {/* Place ParticleSystem first so it renders in the background */}
         <ParticleSystem isListening={isListening} mousePosition={mousePosition} />
         <OrbitControls 
           enableZoom={false} 
           autoRotate 
-          autoRotateSpeed={0.5} // Slower rotation
+          autoRotateSpeed={0.5} 
           enablePan={false}
-          maxPolarAngle={Math.PI / 1.5} // Limit how far down we can look
-          minPolarAngle={Math.PI / 3}   // Limit how far up we can look
+          maxPolarAngle={Math.PI / 1.5} 
+          minPolarAngle={Math.PI / 3} 
         />
-        {/* Grid with adjusted size for viewport containment */}
         <gridHelper 
-          args={[isMobile ? 20 : 30, 30]} 
+          args={[isMobile ? 30 : 40]} 
           position={[0, -2, 0]} 
           rotation={[0, 0, 0]}
           material={new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.15 })}
