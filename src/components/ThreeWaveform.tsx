@@ -4,7 +4,6 @@ import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import AudioAnalyzer from './AudioAnalyzer';
 import ParticleSystem from './ParticleSystem';
-import AssistantObject from './AssistantObject';
 import * as THREE from 'three';
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -27,7 +26,6 @@ const ThreeWaveform: React.FC<ThreeWaveformProps> = ({ isListening }) => {
         <pointLight position={[5, 0, 5]} intensity={0.8} color="#9B87F5" />
         <AudioAnalyzer isListening={isListening} />
         <ParticleSystem isListening={isListening} />
-        <AssistantObject isListening={isListening} />
         <OrbitControls 
           enableZoom={false} 
           autoRotate 

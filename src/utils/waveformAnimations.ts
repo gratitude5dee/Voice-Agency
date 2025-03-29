@@ -53,7 +53,7 @@ export const animateAudioReactiveBar = (
   bar.scale.y = THREE.MathUtils.lerp(bar.scale.y, targetHeight, 0.5);
   
   // Much more contained horizontal movement - keep a tighter circle
-  const radiusModulation = 2 + audioIntensity * 0.5; // Reduced lateral expansion
+  const radiusModulation = 2 + audioIntensity * 0.8; // Reduced lateral expansion
   const x = Math.sin(angle) * radiusModulation;
   const z = Math.cos(angle) * radiusModulation;
   
