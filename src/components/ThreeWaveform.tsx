@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import AudioAnalyzer from './AudioAnalyzer';
@@ -13,6 +13,35 @@ interface ThreeWaveformProps {
 
 const ThreeWaveform: React.FC<ThreeWaveformProps> = ({ isListening }) => {
   const isMobile = useIsMobile();
+  const [mousePosition, setMousePosition] = useState<[number, number]>([0, 0]);
+  
+  // Track mouse movement
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      // Convert to normalized coordinates (-1 to 1)
+      const x = (e.clientX / window.innerWidth) * 2 - 1;
+      const y = -(e.clientY / window.innerHeight) * 2 + 1;
+      setMousePosition([x, y]);
+    };
+    
+    // For touch devices
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        const touch = e.touches[0];
+        const x = (touch.clientX / window.innerWidth) * 2 - 1;
+        const y = -(touch.clientY / window.innerHeight) * 2 + 1;
+        setMousePosition([x, y]);
+      }
+    };
+    
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('touchmove', handleTouchMove);
+    
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('touchmove', handleTouchMove);
+    };
+  }, []);
   
   // Adjust camera position for mobile
   const cameraPosition: [number, number, number] = isMobile ? [0, 2, 5] : [0, 2, 6];
@@ -26,7 +55,7 @@ const ThreeWaveform: React.FC<ThreeWaveformProps> = ({ isListening }) => {
         <pointLight position={[5, 0, 5]} intensity={0.8} color="#9B87F5" />
         <AudioAnalyzer isListening={isListening} />
         {/* Place ParticleSystem first so it renders in the background */}
-        <ParticleSystem isListening={isListening} />
+        <ParticleSystem isListening={isListening} mousePosition={mousePosition} />
         <OrbitControls 
           enableZoom={false} 
           autoRotate 

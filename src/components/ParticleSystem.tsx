@@ -1,3 +1,4 @@
+
 import React, { useRef, useMemo, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
@@ -6,6 +7,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 
 interface ParticleSystemProps {
   isListening: boolean;
+  mousePosition: [number, number];
 }
 
 // Fragment and vertex shaders for custom particle rendering
@@ -40,7 +42,7 @@ const fragmentShader = `
   }
 `;
 
-const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening }) => {
+const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening, mousePosition }) => {
   const particlesRef = useRef<THREE.Points>(null);
   const { audioData } = useAudioData();
   const isMobile = useIsMobile();
@@ -113,6 +115,16 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening }) => {
       const sum = Array.from(audioData).reduce((acc, val) => acc + val, 0);
       globalAudioIntensity = Math.min(sum / (audioData.length * 255), 1);
     }
+    
+    // Mouse influence factors - how strongly the mouse affects particles
+    const mouseInfluence = 0.8; // Strength of mouse influence
+    const mouseAttraction = 1.2; // How much particles are drawn to mouse
+    const [mouseX, mouseY] = mousePosition;
+    
+    // Calculate 3D position from 2D mouse (project onto a sphere)
+    const mouseInfluenceRadius = 4;
+    const mouseZ = Math.sqrt(Math.max(0, mouseInfluenceRadius**2 - mouseX**2 - mouseY**2));
+    const mouse3D = new THREE.Vector3(mouseX * mouseInfluenceRadius, mouseY * mouseInfluenceRadius, -mouseZ);
     
     for (let i = 0; i < particles.count; i++) {
       const i3 = i * 3;
@@ -189,10 +201,28 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening }) => {
       // Calculate expansion factor
       const expansionFactor = scale * breathe * (1 + globalDisplacement);
       
+      // Create mouse attraction/repulsion effect
+      // Influence decreases with distance from mouse
+      const particlePosition = new THREE.Vector3(x, y, z);
+      const distToMouse = particlePosition.distanceTo(mouse3D);
+      
+      // Mouse influence decreases with distance
+      const falloff = Math.max(0, 1 - distToMouse / (isMobile ? 5 : 8));
+      const mouseStrength = mouseInfluence * falloff;
+      
+      // Mouse direction vector (from particle to mouse)
+      const mouseDirection = new THREE.Vector3();
+      mouseDirection.subVectors(mouse3D, particlePosition).normalize();
+      
+      // Mouse attraction effect (subtle pull toward cursor)
+      const mouseAttractionX = mouseDirection.x * mouseAttraction * mouseStrength;
+      const mouseAttractionY = mouseDirection.y * mouseAttraction * mouseStrength;
+      const mouseAttractionZ = mouseDirection.z * mouseAttraction * mouseStrength * 0.5; // Less Z influence
+      
       // Calculate new position with all effects combined
-      let newX = x * expansionFactor + waveX + orbitX * (1 + audioDisplacement);
-      let newY = y * expansionFactor + waveY + orbitY * (1 + audioDisplacement);
-      let newZ = z * expansionFactor + waveZ + orbitZ * (1 + audioDisplacement);
+      let newX = x * expansionFactor + waveX + orbitX * (1 + audioDisplacement) + mouseAttractionX;
+      let newY = y * expansionFactor + waveY + orbitY * (1 + audioDisplacement) + mouseAttractionY;
+      let newZ = z * expansionFactor + waveZ + orbitZ * (1 + audioDisplacement) + mouseAttractionZ;
       
       // Apply a slight repulsion force to prevent particles clumping
       const centerDist = Math.sqrt(newX*newX + newY*newY + newZ*newZ);
@@ -218,10 +248,13 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening }) => {
       positions[i3 + 1] = newY;
       positions[i3 + 2] = newZ;
       
-      // Update size based on audio - more varied sizes
+      // Update size based on audio and mouse proximity
       const baseSize = particles.sizes[i];
       const pulseFactor = 1 + Math.sin(time * 2 + i * 0.1) * 0.1; // Gentle pulse effect
-      sizes[i] = baseSize * pulseFactor * (1 + audioIntensity * 1.8);
+      
+      // Make particles near mouse cursor slightly larger
+      const mouseProximityEffect = 1 + (mouseStrength * 0.5);
+      sizes[i] = baseSize * pulseFactor * mouseProximityEffect * (1 + audioIntensity * 1.8);
     }
     
     particlesRef.current.geometry.attributes.position.needsUpdate = true;
