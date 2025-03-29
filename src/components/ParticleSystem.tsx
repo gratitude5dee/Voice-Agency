@@ -29,7 +29,7 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening }) => {
       // Position particles in a circle initially
       const angle = (i / count) * Math.PI * 2;
       const x = Math.sin(angle) * radius;
-      const y = 0;
+      const y = -1.5; // Position particles at the same height as the waveform base
       const z = Math.cos(angle) * radius;
       
       positions[i * 3] = x;
@@ -80,11 +80,11 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening }) => {
       // Calculate height based on audio or idle animation
       let height;
       if (isListening && audioData) {
-        // Audio-reactive height
-        height = audioIntensity * 2;
+        // Audio-reactive height - start from -1.5 (base position)
+        height = -1.5 + (audioIntensity * 2);
       } else {
-        // Idle animation - gentle wave pattern
-        height = Math.sin(angle * 8 + time * 3) * 0.4 + 0.3;
+        // Idle animation - gentle wave pattern, also starting from -1.5
+        height = -1.5 + (Math.sin(angle * 8 + time * 3) * 0.4 + 0.3);
       }
       
       // Add some randomization within the waveform area
@@ -96,7 +96,7 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening }) => {
       // Calculate final position along the waveform
       const radius = baseRadius + (Math.random() - 0.5) * 0.2;
       const x = Math.sin(angle) * radius + randomX;
-      const y = height + randomY; // Height based on audio or animation
+      const y = height + randomY; // Height based on audio or animation, starting from -1.5
       const z = Math.cos(angle) * radius + randomZ;
       
       // Apply position with smooth lerping

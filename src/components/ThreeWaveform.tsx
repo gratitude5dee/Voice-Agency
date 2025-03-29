@@ -14,8 +14,8 @@ interface ThreeWaveformProps {
 const ThreeWaveform: React.FC<ThreeWaveformProps> = ({ isListening }) => {
   const isMobile = useIsMobile();
   
-  // Bring waveform closer to camera
-  const cameraPosition: [number, number, number] = isMobile ? [0, 1.5, 4] : [0, 1.5, 5.5];
+  // Adjust camera position to better view the aligned particles and waveform
+  const cameraPosition: [number, number, number] = isMobile ? [0, 0, 4] : [0, 0, 5.5];
   const fov = isMobile ? 70 : 60;
   
   return (
