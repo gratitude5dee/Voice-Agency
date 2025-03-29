@@ -4,6 +4,7 @@ import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import AudioAnalyzer from './AudioAnalyzer';
 import ParticleSystem from './ParticleSystem';
+import * as THREE from 'three';
 
 interface ThreeWaveformProps {
   isListening: boolean;
