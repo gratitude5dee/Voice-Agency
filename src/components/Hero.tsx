@@ -1,5 +1,5 @@
 
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { Sparkles } from 'lucide-react';
 import ThreeWaveform from './ThreeWaveform';
 import VoiceAgent from './VoiceAgent';
@@ -7,10 +7,25 @@ import VoiceAgent from './VoiceAgent';
 const Hero = () => {
   const starsContainerRef = useRef<HTMLDivElement>(null);
   const [isActive, setIsActive] = useState(false);
+  const [invertTitle, setInvertTitle] = useState(false);
   
   const toggleAssistant = () => {
     setIsActive(prev => !prev);
   };
+  
+  // Listen for custom event from ParticleSystem to detect when particles are behind text
+  useEffect(() => {
+    const handleParticleDensity = (e: CustomEvent) => {
+      setInvertTitle(e.detail.shouldInvert);
+    };
+    
+    // Add event listener for the custom event
+    window.addEventListener('particleDensityChanged' as any, handleParticleDensity as EventListener);
+    
+    return () => {
+      window.removeEventListener('particleDensityChanged' as any, handleParticleDensity as EventListener);
+    };
+  }, []);
   
   return (
     <section className="relative min-h-screen flex flex-col items-center justify-center pt-20 pb-16 overflow-hidden">
@@ -33,11 +48,11 @@ const Hero = () => {
               <span className="text-sm font-medium">Live voice assistant</span>
             </div>
             
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 animate-fade-in [animation-delay:200ms]">
+            <h1 className={`text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 animate-fade-in [animation-delay:200ms] transition-colors duration-300 ${invertTitle ? 'text-galaxy-dark bg-white/80 px-4 py-2 rounded-lg' : 'text-white'}`}>
               You're Live Now With <span className="text-galaxy-accent">Awaken Ambience</span> Voice Assistant
             </h1>
             
-            <p className="text-lg text-gray-300 mb-8 max-w-xl mx-auto lg:mx-0 animate-fade-in [animation-delay:400ms]">
+            <p className={`text-lg mb-8 max-w-xl mx-auto lg:mx-0 animate-fade-in [animation-delay:400ms] transition-colors duration-300 ${invertTitle ? 'text-galaxy-dark bg-white/80 px-4 py-2 rounded-lg' : 'text-gray-300'}`}>
               Experience real-time voice interaction with ElevenLabs AI. This demo shows how our assistant processes audio input and responds naturally to your voice.
             </p>
             

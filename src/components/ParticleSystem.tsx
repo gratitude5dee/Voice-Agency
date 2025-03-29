@@ -1,5 +1,5 @@
-import React, { useRef, useMemo, useState } from 'react';
-import { useFrame } from '@react-three/fiber';
+import React, { useRef, useMemo, useState, useEffect } from 'react';
+import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useAudioData } from '@/hooks/useAudioData';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -45,6 +45,16 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening, mousePosit
   const particlesRef = useRef<THREE.Points>(null);
   const { audioData } = useAudioData();
   const isMobile = useIsMobile();
+  const { camera } = useThree();
+  
+  // Track particle density in the central area
+  const [centralParticleCount, setCentralParticleCount] = useState(0);
+  const centralAreaRef = useRef({
+    left: -0.3,
+    right: 0.3,
+    top: 0.1,
+    bottom: -0.25
+  });
   
   // Generate particles
   const [particles] = useState(() => {
@@ -93,6 +103,21 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening, mousePosit
     
     return { positions, colors, sizes, count };
   });
+  
+  // Emit custom event when particle density changes
+  useEffect(() => {
+    // Define threshold for when to invert text colors
+    const densityThreshold = isMobile ? 8 : 15; 
+    
+    // Create and dispatch the custom event
+    const event = new CustomEvent('particleDensityChanged', {
+      detail: { 
+        shouldInvert: centralParticleCount > densityThreshold,
+        count: centralParticleCount
+      }
+    });
+    window.dispatchEvent(event);
+  }, [centralParticleCount, isMobile]);
   
   // Update particles animation with improved color transitions and movement
   useFrame(({ clock }) => {
@@ -266,6 +291,37 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening, mousePosit
       // Make particles near mouse cursor slightly larger
       const mouseProximityEffect = 1 + (mouseStrength * 0.5);
       sizes[i] = baseSize * pulseFactor * mouseProximityEffect * (1 + audioIntensity * 0.45); // Reduced from 1.8 to 0.45
+    }
+    
+    // Count particles in the central area (where the title text is)
+    let particlesInCentralArea = 0;
+    const centralArea = centralAreaRef.current;
+    
+    for (let i = 0; i < particles.count; i++) {
+      const i3 = i * 3;
+      
+      // After updating positions, check if this particle is in the central area
+      // Project 3D position to screen space
+      const particle = new THREE.Vector3(
+        positions[i3], 
+        positions[i3 + 1], 
+        positions[i3 + 2]
+      );
+      particle.project(camera);
+      
+      // Check if particle is in the central area (where the title text is)
+      if (particle.x > centralArea.left && 
+          particle.x < centralArea.right && 
+          particle.y > centralArea.bottom && 
+          particle.y < centralArea.top &&
+          particle.z < 1) { // Only count particles in front of camera
+        particlesInCentralArea++;
+      }
+    }
+    
+    // Update central particle count state if it changed significantly
+    if (Math.abs(particlesInCentralArea - centralParticleCount) > 3) {
+      setCentralParticleCount(particlesInCentralArea);
     }
     
     particlesRef.current.geometry.attributes.position.needsUpdate = true;
