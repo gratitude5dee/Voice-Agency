@@ -105,70 +105,78 @@ const AudioAnalyzer = ({ isListening }: { isListening: boolean }) => {
         const angle = (i / 64) * Math.PI * 2;
         
         if (isListening) {
-          // Enhanced audio reactivity with more dramatic scaling
-          const targetHeight = Math.max(0.05, (audioData[i] || 0) / 255 * 5);
-          bar.scale.y = THREE.MathUtils.lerp(bar.scale.y, targetHeight, 0.3);
+          // Super enhanced audio reactivity with more dramatic scaling (10x more drastic)
+          const targetHeight = Math.max(0.1, (audioData[i] || 0) / 255 * 15);
+          bar.scale.y = THREE.MathUtils.lerp(bar.scale.y, targetHeight, 0.5);
           
-          // Add horizontal movement based on audio intensity
+          // Greatly enhanced horizontal movement based on audio intensity
           const freqIntensity = audioData[i] / 255;
-          const radiusModulation = 3 + freqIntensity * 0.5;
+          const radiusModulation = 2 + freqIntensity * 2.5;
           const x = Math.sin(angle) * radiusModulation;
           const z = Math.cos(angle) * radiusModulation;
+          
+          bar.position.x = THREE.MathUtils.lerp(bar.position.x, x, 0.25);
+          bar.position.z = THREE.MathUtils.lerp(bar.position.z, z, 0.25);
+          
+          // Enhanced vertical bounce based on audio
+          const yOffset = Math.sin(time * 3 + i * 0.3) * 0.5 * freqIntensity;
+          bar.position.y = yOffset;
+          
+          // Dramatic color changes based on audio intensity
+          if (bar.material) {
+            const material = bar.material as THREE.MeshStandardMaterial;
+            const hue = (i / length) * 0.5 + time * 0.2;
+            const saturation = 0.5 + freqIntensity * 0.5;
+            const brightness = 0.5 + freqIntensity * 0.5;
+            const color = new THREE.Color().setHSL(hue, saturation, brightness);
+            material.color.lerp(color, 0.3);
+            material.emissive.lerp(color.multiplyScalar(0.5), 0.3);
+            
+            // Make bars more shiny based on audio intensity
+            material.metalness = 0.5 + freqIntensity * 0.5;
+            material.roughness = Math.max(0.1, 0.5 - freqIntensity * 0.4);
+          }
+        } else {
+          // Enhanced idle animation with more extreme wave patterns
+          const wave = Math.sin(angle * 8 + time * 3) * 0.6 + 0.7;
+          const secondaryWave = Math.cos(angle * 4 + time * 2) * 0.4;
+          const combinedWave = wave + secondaryWave;
+          
+          bar.scale.y = THREE.MathUtils.lerp(bar.scale.y, combinedWave, 0.1);
+          
+          // More dramatic breathing effect for the circle radius
+          const breathingRadius = 2 + Math.sin(time * 0.8) * 0.8;
+          const x = Math.sin(angle) * breathingRadius;
+          const z = Math.cos(angle) * breathingRadius;
           
           bar.position.x = THREE.MathUtils.lerp(bar.position.x, x, 0.1);
           bar.position.z = THREE.MathUtils.lerp(bar.position.z, z, 0.1);
           
-          // Add vertical bounce based on audio
-          const yOffset = Math.sin(time * 2 + i * 0.2) * 0.1 * freqIntensity;
+          // More extreme movement in idle state
+          const yOffset = Math.sin(angle * 5 + time * 1.5) * 0.4;
           bar.position.y = yOffset;
           
-          // Add color changes based on audio intensity
+          // More vibrant color cycling when idle
           if (bar.material) {
             const material = bar.material as THREE.MeshStandardMaterial;
-            const hue = (i / length) * 0.2 + time * 0.1;
-            const saturation = 0.5 + freqIntensity * 0.5;
-            const color = new THREE.Color().setHSL(hue, saturation, 0.6);
-            material.color.lerp(color, 0.1);
-            material.emissive.lerp(color.multiplyScalar(0.3), 0.1);
-          }
-        } else {
-          // Enhanced idle animation with more complex wave patterns
-          const wave = Math.sin(angle * 4 + time * 2) * 0.3 + 0.7;
-          const secondaryWave = Math.cos(angle * 2 + time * 1.5) * 0.2;
-          const combinedWave = wave + secondaryWave;
-          
-          bar.scale.y = THREE.MathUtils.lerp(bar.scale.y, combinedWave, 0.05);
-          
-          // Breathing effect for the circle radius
-          const breathingRadius = 3 + Math.sin(time * 0.5) * 0.3;
-          const x = Math.sin(angle) * breathingRadius;
-          const z = Math.cos(angle) * breathingRadius;
-          
-          bar.position.x = THREE.MathUtils.lerp(bar.position.x, x, 0.05);
-          bar.position.z = THREE.MathUtils.lerp(bar.position.z, z, 0.05);
-          
-          // Gently move bars up and down in a wave pattern
-          const yOffset = Math.sin(angle * 3 + time) * 0.2;
-          bar.position.y = yOffset;
-          
-          // Subtle color cycling when idle
-          if (bar.material) {
-            const material = bar.material as THREE.MeshStandardMaterial;
-            const hue = (i / length) * 0.1 + time * 0.05;
-            const color = new THREE.Color().setHSL(hue, 0.7, 0.6);
-            material.color.lerp(color, 0.01);
-            material.emissive.lerp(color.multiplyScalar(0.2), 0.01);
+            const hue = (i / length) * 0.3 + time * 0.1;
+            const color = new THREE.Color().setHSL(hue, 0.8, 0.7);
+            material.color.lerp(color, 0.05);
+            material.emissive.lerp(color.multiplyScalar(0.3), 0.05);
           }
         }
       }
     }
   });
   
+  // Smaller circle diameter (from 3 to 2)
+  const circleRadius = 2;
+  
   return (
     <group ref={barsRef} position={[0, -1.5, 0]}>
       {[...Array(64)].map((_, i) => {
         const angle = (i / 64) * Math.PI * 2;
-        const radius = 3;
+        const radius = circleRadius;
         const x = Math.sin(angle) * radius;
         const z = Math.cos(angle) * radius;
         
@@ -178,9 +186,9 @@ const AudioAnalyzer = ({ isListening }: { isListening: boolean }) => {
             <meshStandardMaterial 
               color="#9B87F5" 
               emissive="#3F2D8C"
-              emissiveIntensity={0.3}
-              metalness={0.5} 
-              roughness={0.3}
+              emissiveIntensity={0.5}
+              metalness={0.6} 
+              roughness={0.2}
             />
           </mesh>
         );
@@ -192,12 +200,12 @@ const AudioAnalyzer = ({ isListening }: { isListening: boolean }) => {
 const ThreeWaveform: React.FC<ThreeWaveformProps> = ({ isListening }) => {
   return (
     <div className="w-full h-full">
-      <Canvas camera={{ position: [0, 2, 7], fov: 60 }}>
+      <Canvas camera={{ position: [0, 2, 6], fov: 60 }}>
         <ambientLight intensity={0.4} />
-        <pointLight position={[0, 5, 0]} intensity={0.8} color="#ffffff" />
-        <pointLight position={[5, 0, 5]} intensity={0.6} color="#9B87F5" />
+        <pointLight position={[0, 5, 0]} intensity={1} color="#ffffff" />
+        <pointLight position={[5, 0, 5]} intensity={0.8} color="#9B87F5" />
         <AudioAnalyzer isListening={isListening} />
-        <OrbitControls enableZoom={false} autoRotate autoRotateSpeed={0.5} enablePan={false} />
+        <OrbitControls enableZoom={false} autoRotate autoRotateSpeed={0.7} enablePan={false} />
         <gridHelper args={[20, 20]} position={[0, -2, 0]} rotation={[0, 0, 0]} />
       </Canvas>
     </div>
