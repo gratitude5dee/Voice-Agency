@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import AudioAnalyzer from './AudioAnalyzer';
@@ -13,36 +13,10 @@ interface ThreeWaveformProps {
 
 const ThreeWaveform: React.FC<ThreeWaveformProps> = ({ isListening }) => {
   const isMobile = useIsMobile();
-  const [mousePosition, setMousePosition] = useState<[number, number]>([0, 0]);
   
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      const x = (e.clientX / window.innerWidth) * 2 - 1;
-      const y = -(e.clientY / window.innerHeight) * 2 + 1;
-      setMousePosition([x, y]);
-    };
-    
-    const handleTouchMove = (e: TouchEvent) => {
-      if (e.touches.length > 0) {
-        const touch = e.touches[0];
-        const x = (touch.clientX / window.innerWidth) * 2 - 1;
-        const y = -(touch.clientY / window.innerHeight) * 2 + 1;
-        setMousePosition([x, y]);
-      }
-    };
-    
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('touchmove', handleTouchMove);
-    
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('touchmove', handleTouchMove);
-    };
-  }, []);
-  
-  // Bring camera closer to the waveform
-  const cameraPosition: [number, number, number] = isMobile ? [0, 1, 10] : [0, 1, 12]; // Reduced z value
-  const fov = isMobile ? 65 : 55;
+  // Adjust camera position for mobile
+  const cameraPosition: [number, number, number] = isMobile ? [0, 2, 5] : [0, 2, 7]; // Increased distance
+  const fov = isMobile ? 70 : 55; // Reduced FOV for better depth perception
   
   return (
     <div className="w-full h-full">
@@ -51,17 +25,18 @@ const ThreeWaveform: React.FC<ThreeWaveformProps> = ({ isListening }) => {
         <pointLight position={[0, 5, 0]} intensity={1} color="#ffffff" />
         <pointLight position={[5, 0, 5]} intensity={0.8} color="#9B87F5" />
         <AudioAnalyzer isListening={isListening} />
-        <ParticleSystem isListening={isListening} mousePosition={mousePosition} />
+        <ParticleSystem isListening={isListening} />
         <OrbitControls 
           enableZoom={false} 
           autoRotate 
-          autoRotateSpeed={0.5} 
+          autoRotateSpeed={0.3} // Slower rotation for better stability
           enablePan={false}
-          maxPolarAngle={Math.PI / 1.5} 
-          minPolarAngle={Math.PI / 3} 
+          maxPolarAngle={Math.PI / 1.5} // Limit how far down we can look
+          minPolarAngle={Math.PI / 3}   // Limit how far up we can look
         />
+        {/* Grid with adjusted size for viewport containment */}
         <gridHelper 
-          args={[isMobile ? 60 : 80]} 
+          args={[isMobile ? 20 : 30, 30]} 
           position={[0, -2, 0]} 
           rotation={[0, 0, 0]}
           material={new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.15 })}
