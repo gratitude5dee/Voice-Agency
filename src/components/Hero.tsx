@@ -13,7 +13,7 @@ const Hero = () => {
   };
   
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center pt-20 pb-16 overflow-hidden">
+    <section className="relative min-h-screen flex flex-col items-center justify-center pt-12 pb-16 overflow-hidden">
       <div ref={starsContainerRef} className="stars-container"></div>
       
       {/* Gradient background effects */}
