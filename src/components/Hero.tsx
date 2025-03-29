@@ -1,9 +1,11 @@
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Sparkles } from 'lucide-react';
+import DemoModal from './DemoModal';
 
 const Hero = () => {
   const starsContainerRef = useRef<HTMLDivElement>(null);
+  const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
   
   useEffect(() => {
     if (!starsContainerRef.current) return;
@@ -72,6 +74,11 @@ const Hero = () => {
     }, 800);
   };
 
+  const openDemoModal = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsDemoModalOpen(true);
+  };
+
   return (
     <section className="relative min-h-screen flex items-center pt-24 pb-16 overflow-hidden">
       <div ref={starsContainerRef} className="stars-container"></div>
@@ -104,7 +111,8 @@ const Hero = () => {
                 Join the Waitlist
               </a>
               <a 
-                href="#features" 
+                href="#"
+                onClick={openDemoModal} 
                 className="secondary-button w-full sm:w-auto text-center"
                 onMouseEnter={handleElementHover}
               >
@@ -145,6 +153,9 @@ const Hero = () => {
           </div>
         </div>
       </div>
+
+      {/* Demo Modal */}
+      <DemoModal isOpen={isDemoModalOpen} onClose={() => setIsDemoModalOpen(false)} />
     </section>
   );
 };
