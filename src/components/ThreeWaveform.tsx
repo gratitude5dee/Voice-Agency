@@ -17,7 +17,13 @@ const ThreeWaveform: React.FC<ThreeWaveformProps> = ({ isListening }) => {
         <pointLight position={[5, 0, 5]} intensity={0.8} color="#9B87F5" />
         <AudioAnalyzer isListening={isListening} />
         <OrbitControls enableZoom={false} autoRotate autoRotateSpeed={0.7} enablePan={false} />
-        <gridHelper args={[20, 20]} position={[0, -2, 0]} rotation={[0, 0, 0]} />
+        <gridHelper 
+          args={[30, 30]} 
+          position={[0, -2, 0]} 
+          rotation={[0, 0, 0]} 
+          material-opacity={0.15} 
+          material-transparent={true} 
+        />
       </Canvas>
     </div>
   );
