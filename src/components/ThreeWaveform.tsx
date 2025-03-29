@@ -91,35 +91,49 @@ const AudioAnalyzer = ({ isListening }: { isListening: boolean }) => {
   }, [isListening]);
   
   // Animate the 3D bars based on audio data
-  useFrame(() => {
+  useFrame(({ clock }) => {
     if (!barsRef.current) return;
     
     const bars = barsRef.current.children;
     const length = Math.min(bars.length, audioData.length);
+    const time = clock.getElapsedTime();
     
     for (let i = 0; i < length; i++) {
       const bar = bars[i] as THREE.Mesh;
       if (bar.scale) {
-        const targetHeight = isListening 
-          ? Math.max(0.05, (audioData[i] || 0) / 255 * 3)
-          : Math.max(0.05, Math.sin((Date.now() / 1000 + i * 0.1) % Math.PI) * 0.5 + 0.5);
+        // Calculate position in the circle to create a wave effect
+        const angle = (i / 64) * Math.PI * 2;
         
-        bar.scale.y = THREE.MathUtils.lerp(bar.scale.y, targetHeight, 0.2);
+        if (isListening) {
+          // Use audio data when listening
+          const targetHeight = Math.max(0.05, (audioData[i] || 0) / 255 * 3);
+          bar.scale.y = THREE.MathUtils.lerp(bar.scale.y, targetHeight, 0.2);
+        } else {
+          // Create a flowing wave effect when idle
+          const wave = Math.sin(angle * 4 + time * 2) * 0.3 + 0.7;
+          bar.scale.y = THREE.MathUtils.lerp(bar.scale.y, wave, 0.05);
+          
+          // Slightly move the bars up and down based on their position
+          if (bar.position) {
+            const yOffset = Math.sin(angle * 2 + time) * 0.1;
+            bar.position.y = yOffset;
+          }
+        }
       }
     }
   });
   
   return (
-    <group ref={barsRef}>
+    <group ref={barsRef} position={[0, -1.5, 0]}>
       {[...Array(64)].map((_, i) => {
         const angle = (i / 64) * Math.PI * 2;
-        const radius = 2;
+        const radius = 3;
         const x = Math.sin(angle) * radius;
         const z = Math.cos(angle) * radius;
         
         return (
           <mesh key={i} position={[x, 0, z]}>
-            <boxGeometry args={[0.1, 0.05, 0.1]} />
+            <boxGeometry args={[0.15, 0.05, 0.15]} />
             <meshStandardMaterial color="#9B87F5" />
           </mesh>
         );
@@ -130,13 +144,13 @@ const AudioAnalyzer = ({ isListening }: { isListening: boolean }) => {
 
 const ThreeWaveform: React.FC<ThreeWaveformProps> = ({ isListening }) => {
   return (
-    <div className="w-full h-60 rounded-xl overflow-hidden">
-      <Canvas camera={{ position: [0, 3, 5], fov: 60 }}>
+    <div className="w-full h-full">
+      <Canvas camera={{ position: [0, 2, 7], fov: 60 }}>
         <ambientLight intensity={0.5} />
         <pointLight position={[10, 10, 10]} intensity={1} />
         <AudioAnalyzer isListening={isListening} />
-        <OrbitControls enableZoom={false} autoRotate autoRotateSpeed={1} />
-        <gridHelper args={[10, 10]} position={[0, -0.5, 0]} rotation={[0, 0, 0]} />
+        <OrbitControls enableZoom={false} autoRotate autoRotateSpeed={0.5} enablePan={false} />
+        <gridHelper args={[20, 20]} position={[0, -2, 0]} rotation={[0, 0, 0]} />
       </Canvas>
     </div>
   );
