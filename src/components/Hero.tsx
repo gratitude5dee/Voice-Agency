@@ -19,6 +19,11 @@ const Hero = () => {
       <div className="absolute top-1/4 -left-64 w-96 h-96 bg-galaxy-accent/20 rounded-full filter blur-3xl"></div>
       <div className="absolute bottom-20 -right-96 w-[40rem] h-[40rem] bg-galaxy-accent/10 rounded-full filter blur-3xl"></div>
       
+      {/* Background 3D scene covering the entire hero section */}
+      <div className="absolute inset-0 z-0">
+        <ThreeWaveform isListening={isActive} />
+      </div>
+      
       <div className="container mx-auto px-6 relative z-10">
         <div className="flex flex-col lg:flex-row items-center">
           <div className="w-full lg:w-1/2 text-center lg:text-left">
@@ -44,22 +49,10 @@ const Hero = () => {
             </div>
           </div>
           
-          <div className="w-full lg:w-1/2 mt-12 lg:mt-0 flex flex-col justify-center items-center animate-fade-in [animation-delay:800ms]">
-            <div className={`w-full max-w-md glass-card rounded-2xl p-4 border ${isActive ? 'border-galaxy-accent/30 shadow-[0_0_30px_rgba(155,135,245,0.2)]' : 'border-galaxy-accent/10'} transition-all duration-300`}>
-              {isActive && (
-                <h3 className="text-lg font-medium mb-2 text-center">Awaken Ambience Voice Interaction</h3>
-              )}
-              <div className="space-y-6">
-                <ThreeWaveform isListening={isActive} />
-              </div>
-            </div>
+          <div className="w-full lg:w-1/2 mt-12 lg:mt-0 flex justify-center items-center animate-fade-in [animation-delay:800ms]">
+            {/* Purposely left empty - content now displayed in the background */}
           </div>
         </div>
-      </div>
-      
-      {/* Background 3D scene */}
-      <div className="fixed inset-0 -z-10">
-        <ThreeWaveform isListening={false} />
       </div>
     </section>
   );
