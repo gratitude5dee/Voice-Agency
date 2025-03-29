@@ -1,3 +1,4 @@
+
 import React, { useRef, useMemo, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
@@ -67,7 +68,13 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening }) => {
     
     // Maximum allowed distance from center to keep particles in view
     const maxAllowedDistance = isMobile ? 4.5 : 5.5;
+    // Minimum allowed distance between particles to prevent tight collapsing
+    const minParticleDistance = isMobile ? 0.3 : 0.4;
     
+    // Create a temporary array to store calculated new positions
+    const newPositions = new Float32Array(particles.count * 3);
+    
+    // First pass: calculate new positions based on animations and audio
     for (let i = 0; i < particles.count; i++) {
       const i3 = i * 3;
       
@@ -126,10 +133,10 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening }) => {
         newZ *= scaleFactor;
       }
       
-      // Update position with contained boundaries
-      positions[i3] = newX;
-      positions[i3 + 1] = newY;
-      positions[i3 + 2] = newZ;
+      // Store the calculated position
+      newPositions[i3] = newX;
+      newPositions[i3 + 1] = newY;
+      newPositions[i3 + 2] = newZ;
       
       // Update size based on audio - more constrained
       const baseSize = particles.sizes[i];
@@ -144,6 +151,53 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening }) => {
         colors[i3 + 1] = color.g;
         colors[i3 + 2] = color.b;
       }
+    }
+    
+    // Second pass: apply particle-to-particle repulsion to prevent clumping
+    // Only check against a subset of nearby particles for performance
+    for (let i = 0; i < particles.count; i++) {
+      const i3 = i * 3;
+      let totalRepulsionX = 0;
+      let totalRepulsionY = 0;
+      let totalRepulsionZ = 0;
+      
+      // Check against a random subset of particles (about 10%)
+      const checkCount = Math.min(particles.count, 200);
+      for (let j = 0; j < checkCount; j++) {
+        // Pick a random particle
+        const randomIndex = Math.floor(Math.random() * particles.count);
+        if (randomIndex === i) continue; // Skip self
+        
+        const j3 = randomIndex * 3;
+        
+        // Calculate distance between particles
+        const dx = newPositions[i3] - newPositions[j3];
+        const dy = newPositions[i3 + 1] - newPositions[j3 + 1];
+        const dz = newPositions[i3 + 2] - newPositions[j3 + 2];
+        const distSq = dx*dx + dy*dy + dz*dz;
+        const dist = Math.sqrt(distSq);
+        
+        // Apply repulsion if particles are too close
+        if (dist < minParticleDistance) {
+          // Repulsion strength inversely proportional to distance
+          const repulsionStrength = 0.05 * (minParticleDistance - dist) / minParticleDistance;
+          
+          // Normalize direction vector
+          const nx = dx / dist;
+          const ny = dy / dist;
+          const nz = dz / dist;
+          
+          // Accumulate repulsion force
+          totalRepulsionX += nx * repulsionStrength;
+          totalRepulsionY += ny * repulsionStrength;
+          totalRepulsionZ += nz * repulsionStrength;
+        }
+      }
+      
+      // Apply accumulated repulsion to particle position
+      positions[i3] = newPositions[i3] + totalRepulsionX;
+      positions[i3 + 1] = newPositions[i3 + 1] + totalRepulsionY;
+      positions[i3 + 2] = newPositions[i3 + 2] + totalRepulsionZ;
     }
     
     particlesRef.current.geometry.attributes.position.needsUpdate = true;
