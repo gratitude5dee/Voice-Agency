@@ -1,3 +1,4 @@
+
 import React, { useRef, useMemo, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
@@ -7,6 +8,38 @@ import { useIsMobile } from '@/hooks/use-mobile';
 interface ParticleSystemProps {
   isListening: boolean;
 }
+
+// Fragment and vertex shaders for custom particle rendering
+const vertexShader = `
+  attribute float size;
+  varying vec3 vColor;
+  void main() {
+    vColor = color;
+    vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+    gl_PointSize = size * (300.0 / -mvPosition.z);
+    gl_Position = projectionMatrix * mvPosition;
+  }
+`;
+
+const fragmentShader = `
+  varying vec3 vColor;
+  void main() {
+    // Create a soft circular particle with smooth edges
+    float r = 0.0, delta = 0.0, alpha = 1.0;
+    vec2 cxy = 2.0 * gl_PointCoord - 1.0;
+    r = dot(cxy, cxy);
+    
+    // Make the particles glow with a soft gradient falloff
+    if (r > 1.0) {
+      discard;
+    }
+    
+    // Apply a soft glow effect
+    alpha = 1.0 - smoothstep(0.8, 1.0, r);
+    
+    gl_FragColor = vec4(vColor, alpha);
+  }
+`;
 
 const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening }) => {
   const particlesRef = useRef<THREE.Points>(null);
@@ -197,19 +230,20 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening }) => {
     particlesRef.current.geometry.attributes.color.needsUpdate = true;
   });
   
-  // Improved particle material
+  // Create custom shader material for enhanced visual effects
   const particleMaterial = useMemo(() => {
-    return new THREE.PointsMaterial({
-      size: isMobile ? 0.08 : 0.1,
-      sizeAttenuation: true,
-      vertexColors: true,
+    return new THREE.ShaderMaterial({
+      uniforms: {
+        // Add any uniforms here if needed
+      },
+      vertexShader,
+      fragmentShader,
       transparent: true,
-      opacity: 0.85,
       blending: THREE.AdditiveBlending,
-      // Add slight glow effect
       depthWrite: false,
+      vertexColors: true,
     });
-  }, [isMobile]);
+  }, []);
   
   return (
     <points ref={particlesRef}>
