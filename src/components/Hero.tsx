@@ -1,10 +1,13 @@
+
 import { useEffect, useRef, useState } from 'react';
 import { Sparkles } from 'lucide-react';
 import AudioWaveform from './AudioWaveform';
+import VoiceAgent from './VoiceAgent';
 
 const Hero = () => {
   const starsContainerRef = useRef<HTMLDivElement>(null);
   const [isListening, setIsListening] = useState(true); // Auto-start listening
+  const [isVoiceAgentActive, setIsVoiceAgentActive] = useState(true); // Auto-start voice agent
   
   useEffect(() => {
     if (!starsContainerRef.current) return;
@@ -59,6 +62,10 @@ const Hero = () => {
   const handleToggleMicrophone = () => {
     setIsListening(prev => !prev);
   };
+
+  const handleToggleVoiceAgent = () => {
+    setIsVoiceAgentActive(prev => !prev);
+  };
   
   const handleElementHover = (e: React.MouseEvent<HTMLElement>) => {
     const element = e.currentTarget;
@@ -97,7 +104,7 @@ const Hero = () => {
             </h1>
             
             <p className="text-lg text-gray-300 mb-8 max-w-xl mx-auto lg:mx-0 animate-fade-in [animation-delay:400ms]">
-              Experience real-time voice visualization with Awaken Ambience. This demo shows how our assistant processes audio input for a more natural interaction.
+              Experience real-time voice interaction with ElevenLabs AI. This demo shows how our assistant processes audio input and responds naturally to your voice.
             </p>
             
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start space-y-4 sm:space-y-0 sm:space-x-4 animate-fade-in [animation-delay:600ms] relative z-20">
@@ -120,8 +127,11 @@ const Hero = () => {
           
           <div className="w-full lg:w-1/2 mt-12 lg:mt-0 flex flex-col justify-center items-center animate-fade-in [animation-delay:800ms]">
             <div className="w-full max-w-md mb-8 glass-card rounded-2xl p-4 border border-galaxy-accent/30 shadow-[0_0_30px_rgba(155,135,245,0.2)]">
-              <h3 className="text-lg font-medium mb-2 text-center">Awaken Ambience Voice Visualization</h3>
-              <AudioWaveform isListening={isListening} onToggle={handleToggleMicrophone} />
+              <h3 className="text-lg font-medium mb-2 text-center">Awaken Ambience Voice Interaction</h3>
+              <div className="space-y-6">
+                <AudioWaveform isListening={isListening} onToggle={handleToggleMicrophone} />
+                <VoiceAgent isOpen={isVoiceAgentActive} onToggle={handleToggleVoiceAgent} />
+              </div>
             </div>
             
             <div className="relative w-64 h-64 mx-auto rounded-full glass-card border border-galaxy-accent/30 p-2 shadow-[0_0_50px_rgba(155,135,245,0.3)] animate-float">
