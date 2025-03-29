@@ -79,7 +79,8 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ isOpen, onToggle, isListening }
     <div className="flex items-center justify-center gap-2">
       <Button 
         onClick={onToggle}
-        className={`flex items-center space-x-2 ${
+        size="lg"
+        className={`primary-button flex items-center space-x-2 px-8 py-6 text-base ${
           isOpen 
             ? 'bg-red-500 hover:bg-red-600' 
             : 'bg-galaxy-accent hover:bg-galaxy-accent/80'
@@ -87,12 +88,12 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ isOpen, onToggle, isListening }
       >
         {isOpen ? (
           <>
-            <MicOff size={18} />
+            <MicOff size={20} />
             <span>Stop Assistant</span>
           </>
         ) : (
           <>
-            <Mic size={18} />
+            <Mic size={20} />
             <span>Start Assistant</span>
           </>
         )}

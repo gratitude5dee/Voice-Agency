@@ -40,7 +40,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
-      <Toaster position="top-center" richColors />
+      <Toaster position="top-center" richColors closeButton />
       <Navigation />
       <Hero />
       <Features />

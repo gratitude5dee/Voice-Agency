@@ -1,3 +1,4 @@
+
 import { useEffect, useRef, useState } from 'react';
 import { Sparkles } from 'lucide-react';
 import AudioWaveform from './AudioWaveform';
@@ -61,23 +62,6 @@ const Hero = () => {
     setIsActive(prev => !prev);
   };
   
-  const handleElementHover = (e: React.MouseEvent<HTMLElement>) => {
-    const element = e.currentTarget;
-    const rect = element.getBoundingClientRect();
-    const ripple = document.createElement('div');
-    
-    ripple.classList.add('ripple-effect');
-    ripple.style.width = ripple.style.height = `${Math.max(rect.width, rect.height)}px`;
-    ripple.style.left = `${e.clientX - rect.left - ripple.offsetWidth / 2}px`;
-    ripple.style.top = `${e.clientY - rect.top - ripple.offsetHeight / 2}px`;
-    
-    element.appendChild(ripple);
-    
-    setTimeout(() => {
-      ripple.remove();
-    }, 800);
-  };
-
   return (
     <section className="relative min-h-screen flex items-center pt-24 pb-16 overflow-hidden">
       <div ref={starsContainerRef} className="stars-container"></div>
@@ -101,29 +85,24 @@ const Hero = () => {
               Experience real-time voice interaction with ElevenLabs AI. This demo shows how our assistant processes audio input and responds naturally to your voice.
             </p>
             
-            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start space-y-4 sm:space-y-0 sm:space-x-4 animate-fade-in [animation-delay:600ms] relative z-20">
-              <a 
-                href="#waitlist" 
-                className="primary-button w-full sm:w-auto text-center"
-                onMouseEnter={handleElementHover}
-              >
-                Join the Waitlist
-              </a>
-              
+            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start space-y-4 sm:space-y-0 animate-fade-in [animation-delay:600ms] relative z-20">
               <VoiceAgent 
                 isOpen={isActive} 
                 onToggle={toggleAssistant}
+                isListening={isActive}
               />
             </div>
           </div>
           
           <div className="w-full lg:w-1/2 mt-12 lg:mt-0 flex flex-col justify-center items-center animate-fade-in [animation-delay:800ms]">
-            <div className="w-full max-w-md mb-8 glass-card rounded-2xl p-4 border border-galaxy-accent/30 shadow-[0_0_30px_rgba(155,135,245,0.2)]">
-              <h3 className="text-lg font-medium mb-2 text-center">Awaken Ambience Voice Interaction</h3>
-              <div className="space-y-6">
-                {isActive && <AudioWaveform isListening={isActive} onToggle={toggleAssistant} />}
+            {isActive && (
+              <div className="w-full max-w-md mb-8 glass-card rounded-2xl p-4 border border-galaxy-accent/30 shadow-[0_0_30px_rgba(155,135,245,0.2)]">
+                <h3 className="text-lg font-medium mb-2 text-center">Awaken Ambience Voice Interaction</h3>
+                <div className="space-y-6">
+                  <AudioWaveform isListening={isActive} onToggle={toggleAssistant} />
+                </div>
               </div>
-            </div>
+            )}
             
             <div className="relative w-64 h-64 mx-auto rounded-full glass-card border border-galaxy-accent/30 p-2 shadow-[0_0_50px_rgba(155,135,245,0.3)] animate-float">
               <div className="w-full h-full rounded-full bg-gradient-to-br from-galaxy-purple to-galaxy-dark flex items-center justify-center overflow-hidden">
@@ -139,87 +118,11 @@ const Hero = () => {
                 <div className="absolute w-full h-full rounded-full border border-galaxy-accent/20 opacity-0 animate-ping [animation-duration:3s] [animation-delay:1s]"></div>
               </div>
             </div>
-            
-            <div className="absolute -top-4 right-16 w-20 h-20 rounded-xl glass-card p-4 flex items-center justify-center animate-float [animation-delay:1s]">
-              <Cloud className="w-10 h-10 text-galaxy-accent" />
-            </div>
-            
-            <div className="absolute top-1/2 -left-6 w-20 h-20 rounded-xl glass-card p-4 flex items-center justify-center animate-float [animation-delay:2s]">
-              <Search className="w-10 h-10 text-galaxy-accent" />
-            </div>
-            
-            <div className="absolute -bottom-4 right-20 w-20 h-20 rounded-xl glass-card p-4 flex items-center justify-center animate-float [animation-delay:1.5s]">
-              <Camera className="w-10 h-10 text-galaxy-accent" />
-            </div>
           </div>
         </div>
       </div>
     </section>
   );
 };
-
-const Mic = (props: any) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    {...props}
-  >
-    <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
-    <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-    <line x1="12" x2="12" y1="19" y2="22" />
-  </svg>
-);
-
-const Cloud = (props: any) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    {...props}
-  >
-    <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
-  </svg>
-);
-
-const Search = (props: any) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    {...props}
-  >
-    <circle cx="11" cy="11" r="8" />
-    <line x1="21" x2="16.65" y1="21" y2="16.65" />
-  </svg>
-);
-
-const Camera = (props: any) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    {...props}
-  >
-    <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
-    <circle cx="12" cy="13" r="3" />
-  </svg>
-);
 
 export default Hero;
