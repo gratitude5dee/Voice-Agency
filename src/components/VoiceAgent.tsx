@@ -12,7 +12,7 @@ interface VoiceAgentProps {
 
 const VoiceAgent: React.FC<VoiceAgentProps> = ({ isOpen, onToggle }) => {
   const [isMuted, setIsMuted] = useState(false);
-  const [agentId, setAgentId] = useState<string>('');
+  const [agentId, setAgentId] = useState<string>('TJSzYuSKas1pB1x0u2AW');
   
   const conversation = useConversation({
     onConnect: () => {
@@ -33,12 +33,8 @@ const VoiceAgent: React.FC<VoiceAgentProps> = ({ isOpen, onToggle }) => {
   });
 
   useEffect(() => {
-    // This would normally come from env variables in a production app
-    // For demo purposes, we're hardcoding a value
-    setAgentId('demo-agent-id');
-    
+    // Cleanup function
     return () => {
-      // Cleanup
       if (conversation.status === 'connected') {
         conversation.endSession();
       }
