@@ -1,4 +1,5 @@
-import { Mic, Eye, Brain, Cloud, Search, Shield } from 'lucide-react';
+
+import { Mic, Cloud, Search } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 
 const Features = () => {
@@ -47,7 +48,7 @@ const Features = () => {
           <div className="feature-card opacity-0 translate-y-10 transition-all duration-700 delay-[0ms]">
             <div className="h-full glass-card rounded-2xl p-6 hover:shadow-[0_10px_40px_-15px_rgba(155,135,245,0.3)] transition-all duration-500">
               <div className="feature-icon-wrapper">
-                <Eye className="w-6 h-6 text-white" />
+                <CustomEye className="w-6 h-6 text-white" />
               </div>
               <h3 className="text-xl font-semibold mb-3">Sees What You See</h3>
               <p className="text-gray-300">
@@ -60,7 +61,7 @@ const Features = () => {
           <div className="feature-card opacity-0 translate-y-10 transition-all duration-700 delay-[200ms]">
             <div className="h-full glass-card rounded-2xl p-6 hover:shadow-[0_10px_40px_-15px_rgba(155,135,245,0.3)] transition-all duration-500">
               <div className="feature-icon-wrapper">
-                <Brain className="w-6 h-6 text-white" />
+                <CustomBrain className="w-6 h-6 text-white" />
               </div>
               <h3 className="text-xl font-semibold mb-3">Remembers Everything</h3>
               <p className="text-gray-300">
@@ -99,7 +100,7 @@ const Features = () => {
           <div className="feature-card opacity-0 translate-y-10 transition-all duration-700 delay-[800ms]">
             <div className="h-full glass-card rounded-2xl p-6 hover:shadow-[0_10px_40px_-15px_rgba(155,135,245,0.3)] transition-all duration-500">
               <div className="feature-icon-wrapper">
-                <Shield className="w-6 h-6 text-white" />
+                <CustomShield className="w-6 h-6 text-white" />
               </div>
               <h3 className="text-xl font-semibold mb-3">Privacy Controls</h3>
               <p className="text-gray-300">
@@ -178,7 +179,7 @@ const Features = () => {
               {/* Central icon */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="w-16 h-16 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center">
-                  <Eye className="w-7 h-7 text-white" />
+                  <CustomEye className="w-7 h-7 text-white" />
                 </div>
               </div>
               
@@ -295,6 +296,7 @@ const Features = () => {
   );
 };
 
+// Rename these component definitions to avoid conflicts with the lucide imports
 const Sparkles = (props: any) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -314,7 +316,7 @@ const Sparkles = (props: any) => (
   </svg>
 );
 
-const Brain = (props: any) => (
+const CustomBrain = (props: any) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
@@ -330,7 +332,7 @@ const Brain = (props: any) => (
   </svg>
 );
 
-const Eye = (props: any) => (
+const CustomEye = (props: any) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
@@ -346,7 +348,7 @@ const Eye = (props: any) => (
   </svg>
 );
 
-const Shield = (props: any) => (
+const CustomShield = (props: any) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
