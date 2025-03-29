@@ -25,9 +25,9 @@ const Hero = () => {
         <ThreeWaveform isListening={isActive} />
       </div>
       
-      <div className="container mx-auto px-6 relative z-10 flex-1 flex items-center">
+      <div className="container mx-auto px-6 relative z-10 flex-1 flex items-center justify-center">
         <div className="flex flex-col lg:flex-row items-center">
-          <div className="w-full lg:w-1/2 text-center lg:text-left">
+          <div className="w-full lg:w-1/2 text-center">
             <div className="inline-flex items-center px-3 py-1 mb-6 rounded-full bg-galaxy-purple/30 border border-galaxy-accent/20 animate-fade-in">
               <Sparkles size={16} className="text-galaxy-accent mr-2" />
               <span className="text-sm font-medium">Voice AI</span>
@@ -37,11 +37,11 @@ const Hero = () => {
               <span className="text-galaxy-accent">Awaken Ambience</span>
             </h1>
             
-            <p className="text-xl text-gray-300 mb-8 max-w-xl mx-auto lg:mx-0 animate-fade-in [animation-delay:400ms]">
+            <p className="text-xl text-gray-300 mb-8 max-w-xl mx-auto animate-fade-in [animation-delay:400ms]">
               Talk to the future. Real-time voice AI that responds naturally.
             </p>
             
-            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start animate-fade-in [animation-delay:600ms] relative z-20">
+            <div className="flex flex-col sm:flex-row items-center justify-center animate-fade-in [animation-delay:600ms] relative z-20">
               <VoiceAgent 
                 isOpen={isActive} 
                 onToggle={toggleAssistant}
