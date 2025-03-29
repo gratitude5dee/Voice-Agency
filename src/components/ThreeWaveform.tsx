@@ -14,8 +14,8 @@ interface ThreeWaveformProps {
 const ThreeWaveform: React.FC<ThreeWaveformProps> = ({ isListening }) => {
   const isMobile = useIsMobile();
   
-  // Adjust camera position for mobile
-  const cameraPosition: [number, number, number] = isMobile ? [0, 2, 5] : [0, 2, 7]; // Increased distance
+  // Bring the waveform closer to the camera
+  const cameraPosition: [number, number, number] = isMobile ? [0, 1.5, 3.5] : [0, 1.5, 5]; // Closer position
   const fov = isMobile ? 70 : 55; // Reduced FOV for better depth perception
   
   return (

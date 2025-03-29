@@ -1,4 +1,3 @@
-
 import React, { useRef, useMemo, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
@@ -17,7 +16,7 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening }) => {
   // Generate particles
   const [particles] = useState(() => {
     // Reduce particle count on mobile devices
-    const count = isMobile ? 1000 : 2000;
+    const count = isMobile ? 500 : 1000; // Reduced by half
     const positions = new Float32Array(count * 3);
     const colors = new Float32Array(count * 3);
     const sizes = new Float32Array(count);
@@ -205,17 +204,54 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening }) => {
     particlesRef.current.geometry.attributes.color.needsUpdate = true;
   });
   
-  // Particle material
-  const particleMaterial = useMemo(() => {
-    return new THREE.PointsMaterial({
-      size: isMobile ? 0.08 : 0.1,
-      sizeAttenuation: true,
-      vertexColors: true,
-      transparent: true,
-      opacity: 0.8,
+  // Custom shader material for smoother, blurry particles
+  const customMaterial = useMemo(() => {
+    // Vertex shader - handles position and size
+    const vertexShader = `
+      attribute float size;
+      attribute vec3 color;
+      varying vec3 vColor;
+      
+      void main() {
+        vColor = color;
+        vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+        gl_PointSize = size * (300.0 / -mvPosition.z);
+        gl_Position = projectionMatrix * mvPosition;
+      }
+    `;
+    
+    // Fragment shader - creates soft, glowing particles
+    const fragmentShader = `
+      varying vec3 vColor;
+      
+      void main() {
+        // Calculate distance from center of point
+        vec2 center = gl_PointCoord - 0.5;
+        float dist = length(center);
+        
+        // Smooth falloff for soft edge (instead of hard square points)
+        float strength = 1.0 - smoothstep(0.0, 0.5, dist);
+        
+        // Apply radial gradient for glow effect
+        float glow = min(1.8 * exp(-4.0 * dist * dist), 1.0);
+        
+        if (glow < 0.05) discard; // Remove very faint edges
+        
+        // Apply color with smooth falloff
+        gl_FragColor = vec4(vColor, glow * strength);
+      }
+    `;
+    
+    return new THREE.ShaderMaterial({
+      uniforms: {},
+      vertexShader,
+      fragmentShader,
       blending: THREE.AdditiveBlending,
+      depthTest: false,
+      transparent: true,
+      vertexColors: true
     });
-  }, [isMobile]);
+  }, []);
   
   return (
     <points ref={particlesRef}>
@@ -239,7 +275,7 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening }) => {
           itemSize={1}
         />
       </bufferGeometry>
-      <primitive object={particleMaterial} />
+      <primitive object={customMaterial} />
     </points>
   );
 };
