@@ -4,6 +4,7 @@ import Hero from "../components/Hero";
 import Features from "../components/Features";
 import Pricing from "../components/Pricing";
 import WaitlistForm from "../components/WaitlistForm";
+import About from "../components/About";
 import Footer from "../components/Footer";
 import { useEffect } from "react";
 import { Toaster } from "sonner";
@@ -46,6 +47,7 @@ const Index = () => {
       <Features />
       <Pricing />
       <WaitlistForm />
+      <About />
       <Footer />
     </div>
   );
