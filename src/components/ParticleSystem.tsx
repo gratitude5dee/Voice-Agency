@@ -13,7 +13,7 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening }) => {
   const { audioData } = useAudioData();
   const isMobile = useIsMobile();
   
-  // Generate particles with orbital paths
+  // Generate particles
   const [particles] = useState(() => {
     // Reduce particle count on mobile devices
     const count = isMobile ? 1000 : 2000;
@@ -21,32 +21,18 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening }) => {
     const colors = new Float32Array(count * 3);
     const sizes = new Float32Array(count);
     
-    // Store original orbit parameters
-    const orbits = new Float32Array(count * 4); // radius, speed, phase, height
-    
-    // Initialize particles in orbital shells
-    const maxRadius = isMobile ? 3.5 : 4.5;
-    const minRadius = maxRadius * 0.3; // Minimum radius to avoid center clumping
+    // Initialize particles in a better distributed sphere
+    const maxRadius = isMobile ? 3.5 : 4.5; // Slightly larger radius for better spread
     
     for (let i = 0; i < count; i++) {
-      // Create layered orbital shells
-      const shellIndex = Math.floor(Math.random() * 5); // 5 different orbital shells
-      const radius = minRadius + (maxRadius - minRadius) * (shellIndex / 4 + Math.random() * 0.2);
-      const orbitSpeed = 0.1 + Math.random() * 0.2; // Varied speeds
-      const phase = Math.random() * Math.PI * 2; // Random starting position
-      const heightVariation = Math.random() * 2 - 1; // Vertical distribution
+      // Improved distribution in a sphere to avoid clumping
+      const radius = maxRadius * Math.pow(Math.random(), 0.6); // More particles toward edges
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2 * Math.random() - 1);
       
-      // Store orbit parameters for use in animation
-      orbits[i * 4] = radius;
-      orbits[i * 4 + 1] = orbitSpeed;
-      orbits[i * 4 + 2] = phase;
-      orbits[i * 4 + 3] = heightVariation;
-      
-      // Initial positions based on orbital parameters
-      const theta = phase;
-      const x = radius * Math.cos(theta);
-      const z = radius * Math.sin(theta);
-      const y = heightVariation * (radius * 0.2);
+      const x = radius * Math.sin(phi) * Math.cos(theta);
+      const y = radius * Math.sin(phi) * Math.sin(theta);
+      const z = radius * Math.cos(phi);
       
       positions[i * 3] = x;
       positions[i * 3 + 1] = y;
@@ -63,10 +49,10 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening }) => {
       sizes[i] = Math.random() * (isMobile ? 0.4 : 0.5) + (isMobile ? 0.3 : 0.5);
     }
     
-    return { positions, colors, sizes, orbits, count };
+    return { positions, colors, sizes, count };
   });
   
-  // Update particles animation to maintain orbital paths
+  // Update particles animation with better distribution
   useFrame(({ clock }) => {
     if (!particlesRef.current) return;
     
@@ -75,61 +61,75 @@ const ParticleSystem: React.FC<ParticleSystemProps> = ({ isListening }) => {
     const sizes = particlesRef.current.geometry.attributes.size.array as Float32Array;
     const colors = particlesRef.current.geometry.attributes.color.array as Float32Array;
     
+    // Use a smaller scale for more contained animations
+    const baseScale = isMobile ? 0.95 : 1.05;
+    const scale = isListening ? baseScale * 1.1 : baseScale;
+    
     // Maximum allowed distance from center to keep particles in view
     const maxAllowedDistance = isMobile ? 4.5 : 5.5;
     
     for (let i = 0; i < particles.count; i++) {
       const i3 = i * 3;
-      const i4 = i * 4;
       
-      // Get original orbit parameters
-      const radius = particles.orbits[i4];
-      const orbitSpeed = particles.orbits[i4 + 1];
-      const phase = particles.orbits[i4 + 2];
-      const heightVariation = particles.orbits[i4 + 3];
+      // Get original position
+      const x = particles.positions[i3];
+      const y = particles.positions[i3 + 1];
+      const z = particles.positions[i3 + 2];
       
-      // Calculate audio reactivity
+      // Calculate normalized distance from center
+      const distance = Math.sqrt(x*x + y*y + z*z);
+      const normalizedDist = distance / maxAllowedDistance;
+      
+      // Audio reactivity - more controlled
       let audioIntensity = 0;
       if (isListening && audioData && i < audioData.length) {
         const audioIndex = Math.floor(i % audioData.length);
+        // Cap the audio intensity to prevent extreme expansion
         audioIntensity = Math.min(audioData[audioIndex] / 255, 0.8);
       }
       
-      // Orbital rotation with time
-      const theta = phase + time * orbitSpeed;
+      // Gentler wave effect with better spread
+      const waveX = Math.sin(time * 0.7 + x) * 0.2;
+      const waveY = Math.cos(time * 0.8 + y) * 0.2;
+      const waveZ = Math.sin(time * 0.9 + z) * 0.2;
       
-      // Wave effect that modifies the orbital path but maintains the general shape
-      const waveAmplitude = 0.15 * (1 + audioIntensity * 0.8);
-      const waveFrequency = 3 + audioIntensity * 2;
-      const radiusModulation = 1 + Math.sin(time * 0.5 + phase * 3) * 0.08;
+      // Slower breathing effect for stability
+      const breathe = (Math.sin(time * 0.5) * 0.3 + 0.5) * 0.3 + 0.7;
       
-      // Apply waves while maintaining orbital structure
-      const modifiedRadius = radius * radiusModulation;
-      const waveX = Math.sin(theta * waveFrequency) * waveAmplitude;
-      const waveZ = Math.cos(theta * waveFrequency) * waveAmplitude;
+      // More contained audio-reactive displacement
+      const audioDisplacement = isListening ? (audioIntensity * 0.9) : 0;
       
-      // Calculate orbital position with wave effects
-      const x = modifiedRadius * Math.cos(theta) + waveX;
-      const z = modifiedRadius * Math.sin(theta) + waveZ;
+      // Apply all effects with constraints
+      const finalScale = scale * breathe * (1 + audioDisplacement * 0.3);
       
-      // Vertical position with gentle wave and audio reactivity
-      const heightWave = Math.sin(time * 0.7 + phase * 5) * 0.3;
-      const audioVerticalEffect = isListening ? audioIntensity * 0.6 : 0;
-      const y = heightVariation * (radius * 0.2) + heightWave + audioVerticalEffect;
+      // Calculate new position - with repulsion force to prevent collapse
+      let newX = x * finalScale + waveX * (1 + audioDisplacement * 0.5);
+      let newY = y * finalScale + waveY * (1 + audioDisplacement * 0.5);
+      let newZ = z * finalScale + waveZ * (1 + audioDisplacement * 0.5);
       
-      // Ensure the particle stays within boundaries
-      const distanceFromCenter = Math.sqrt(x*x + z*z);
-      if (distanceFromCenter > maxAllowedDistance) {
-        const scaleFactor = maxAllowedDistance / distanceFromCenter;
-        positions[i3] = x * scaleFactor;
-        positions[i3 + 2] = z * scaleFactor;
-      } else {
-        positions[i3] = x;
-        positions[i3 + 2] = z;
+      // Apply a slight repulsion force from center to prevent collapse
+      const centerDist = Math.sqrt(newX*newX + newY*newY + newZ*newZ);
+      if (centerDist < 1.5) { // If too close to center
+        const repulsionFactor = 1.5 / Math.max(0.1, centerDist);
+        newX *= repulsionFactor;
+        newY *= repulsionFactor;
+        newZ *= repulsionFactor;
       }
       
-      // Update Y position directly (vertical movement has more freedom)
-      positions[i3 + 1] = Math.max(-maxAllowedDistance, Math.min(maxAllowedDistance, y));
+      // Check if the new position exceeds the maximum allowed distance
+      const newDistance = Math.sqrt(newX*newX + newY*newY + newZ*newZ);
+      if (newDistance > maxAllowedDistance) {
+        // Scale back the position to the maximum allowed distance
+        const scaleFactor = maxAllowedDistance / newDistance;
+        newX *= scaleFactor;
+        newY *= scaleFactor;
+        newZ *= scaleFactor;
+      }
+      
+      // Update position with contained boundaries
+      positions[i3] = newX;
+      positions[i3 + 1] = newY;
+      positions[i3 + 2] = newZ;
       
       // Update size based on audio - more constrained
       const baseSize = particles.sizes[i];
