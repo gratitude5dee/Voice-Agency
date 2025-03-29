@@ -1,4 +1,3 @@
-
 import { Mic, Eye, Brain, Cloud, Search, Shield } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 
